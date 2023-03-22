@@ -114,12 +114,67 @@ public class Model extends Observable {
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
+        for(int c = 0; c<board.size(); c++){
+            int[] record = {0, 0, 0, 0};
+            for(int r=board.size()-1;r>=0;r--){
+                if(r==board.size()-1){
+                    if(board.tile(c,r) != null){
+                        record[3]=1;
+                    }
+                }
+                else if(board.tile(c,r) != null){
+                    for(int i=r+1;i<4;i++){
+                        if(record[i]>0){
+                            Tile t = board.tile(c,r);
+                            if(t.value()==board.tile(c,i).value()){
+                                board.move(c,i,t);
+//                                if(board.tile(c,r)==null) System.out.print(0);
+                                score += board.tile(c,i).value();
+                                record[i]=-1;
+                                changed = true;
+                                break;
+                            }else{
+                                record[i]=-1;
+                                record[i-1]=1;
+                                if(i-1!=r){
+                                    board.move(c,i-1,t);
+                                    changed = true;
+                                }
+                                break;
+                            }
+                        }else if(record[i]<0){
+                            record[i-1]=1;
+                            if(i-1!=r) {
+                                Tile t = board.tile(c, r);
+                                board.move(c, i - 1, t);
+                                changed = true;
+                            }
+                            break;
+                        }
+                    }
+                    if(!record_changed(record)){
+                        Tile t = board.tile(c,r);
+                        board.move(c,3,t);
+                        changed = true;
+                        record[3]=1;
+                    }
+                }
+            }
+        }
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
     }
+
+    public boolean record_changed(int[] record){
+        for(int i=0;i<4;i++){
+            if(record[i]!=0) return true;
+        }
+        return false;
+    }
+
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
