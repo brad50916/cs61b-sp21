@@ -115,6 +115,9 @@ public class Model extends Observable {
         // changed local variable to true.
 
         for(int c = 0; c<board.size(); c++){
+            // Using array to store should we merge the two piles or not in a column.
+            // 1 means we can merge, 0 means the pile is null, -1 means we can't merge it
+            // index 0 in record array corresponds to index 0 in row.
             int[] record = {0, 0, 0, 0};
             for(int r=board.size()-1;r>=0;r--){
                 if(r==board.size()-1){
@@ -229,7 +232,10 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        // At least one empty space on the board
         if(emptySpaceExists(b)) return true;
+
+        //using array to store 3 directions
         int[] dr = {-1,0,1,0};
         for(int i=0;i<b.size();i++){
             for(int j=0;j<b.size();j++){
