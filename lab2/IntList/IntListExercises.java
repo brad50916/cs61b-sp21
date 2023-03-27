@@ -1,5 +1,7 @@
 package IntList;
 
+import jh61b.junit.In;
+
 public class IntListExercises {
 
     /**
@@ -10,9 +12,10 @@ public class IntListExercises {
      */
     public static void addConstant(IntList lst, int c) {
         IntList head = lst;
-        while (head.rest != null) {
-            head.first += c;
-            head = head.rest;
+        IntList dummy = new IntList(0,head);
+        while (dummy.rest != null) {
+            dummy.rest.first += c;
+            dummy = dummy.rest;
         }
     }
 
@@ -29,6 +32,11 @@ public class IntListExercises {
             if (firstDigitEqualsLastDigit(max(p))) {
                 p.first = 0;
             }
+//            int currentMax = max(p);
+//            boolean firstEqualsLast = firstDigitEqualsLastDigit(currentMax);
+//            if (firstEqualsLast) {
+//                p.first = 0;
+//            }
             p = p.rest;
         }
     }
@@ -51,7 +59,7 @@ public class IntListExercises {
      */
     public static boolean firstDigitEqualsLastDigit(int x) {
         int lastDigit = x % 10;
-        while (x > 10) {
+        while (x >= 10) {
             x = x / 10;
         }
         int firstDigit = x % 10;
@@ -76,7 +84,8 @@ public class IntListExercises {
         if (currElemIsPrime) {
             lst.first *= lst.first;
         }
-
-        return currElemIsPrime || squarePrimes(lst.rest);
+        boolean changed1 = currElemIsPrime;
+        boolean changed2 = squarePrimes(lst.rest);
+        return changed1 || changed2;
     }
 }
