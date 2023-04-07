@@ -45,4 +45,12 @@ public class ArrayDeque<Item> {
         }
         System.out.print("\n");
     }
+
+    public Item get(int index) {
+        int cur = (nextfirst + 1) % array_size;
+        while(index-- > 0) {
+            cur = (cur + 1) % array_size;
+        }
+        return items[cur];
+    }
 }

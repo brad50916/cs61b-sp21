@@ -26,7 +26,7 @@ public class ArrayDequeTest {
         System.out.println("Printing out deque: ");
         lld1.printDeque();
 
-//        System.out.println("Printing index 0");
-//        System.out.println(lld1.get(0));
+        System.out.println("Printing index 0");
+        System.out.println(lld1.get(0));
     }
 }
