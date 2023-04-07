@@ -1,6 +1,6 @@
 package deque;
 
-public class LinkedListDeque<Item> {
+public class LinkedListDeque<T> {
     private int size;
     private Node s1;
     private Node s2;
@@ -9,18 +9,18 @@ public class LinkedListDeque<Item> {
         s1 = new Node(null,null,null);
         s2 = new Node(null,null,null);
     }
-    public class Node {
-        public Item value;
+    private class Node {
+        public T value;
         public Node next;
         public Node prev;
-        public Node(Item i, Node n, Node p) {
+        public Node(T i, Node n, Node p) {
             value = i;
             next = n;
             prev = p;
         }
     }
 
-    public void addFirst(Item item) {
+    public void addFirst(T item) {
         if(size == 0) {
             Node temp = new Node(item, s2, s1);
             s1.next = temp;
@@ -33,7 +33,7 @@ public class LinkedListDeque<Item> {
         size++;
     }
 
-    public void addLast(Item item) {
+    public void addLast(T item) {
         if(size == 0) {
             Node temp = new Node(item, s2, s1);
             s1.next = temp;
@@ -63,9 +63,9 @@ public class LinkedListDeque<Item> {
         System.out.print("\n");
     }
 
-    public Item removeFirst() {
+    public T removeFirst() {
         if(size == 0) return null;
-        Item temp = s1.next.value;
+        T temp = s1.next.value;
         if(size == 1) {
             s1.next = null;
             s2.prev = null;
@@ -77,9 +77,9 @@ public class LinkedListDeque<Item> {
         return temp;
     }
 
-    public Item removeLast() {
+    public T removeLast() {
         if(size == 0) return null;
-        Item temp = s2.prev.value;
+        T temp = s2.prev.value;
         if(size == 1) {
             s1.next = null;
             s2.prev = null;
@@ -91,7 +91,7 @@ public class LinkedListDeque<Item> {
         return temp;
     }
 
-    public Item get(int index) {
+    public T get(int index) {
         Node temp = s1;
         while(index-- >= 0) {
             if(temp == s2) return null;

@@ -1,19 +1,19 @@
 package deque;
 
-public class ArrayDeque<Item> {
-    private Item[] items;
+public class ArrayDeque<T> {
+    private T[] items;
     private int size;
     private int nextfirst;
     private int nextlast;
     private int array_size = 8;
     public ArrayDeque() {
-        items = (Item[]) new Object[array_size];
+        items = (T[]) new Object[array_size];
         nextfirst = 4;
         nextlast = 5;
         size = 0;
     }
 
-    public void addFirst(Item item) {
+    public void addFirst(T item) {
         items[nextfirst--] = item;
         if(nextfirst < 0){
             nextfirst = array_size - 1;
@@ -21,7 +21,7 @@ public class ArrayDeque<Item> {
         size++;
     }
 
-    public void addLast(Item item) {
+    public void addLast(T item) {
         items[nextlast++] = item;
         if(nextlast >= array_size){
             nextlast = 0;
@@ -46,27 +46,27 @@ public class ArrayDeque<Item> {
         System.out.print("\n");
     }
 
-    public Item removeFirst() {
+    public T removeFirst() {
         if(size == 0) return null;
         int temp = (nextfirst + 1) % array_size;
-        Item remove_item = items[temp];
+        T remove_item = items[temp];
         items[temp] = null;
         nextfirst = temp;
         size--;
         return remove_item;
     }
 
-    public Item removeLast() {
+    public T removeLast() {
         if(size == 0) return null;
         int temp = (nextlast - 1 < 0) ? array_size - 1 : nextlast - 1;
-        Item remove_item = items[temp];
+        T remove_item = items[temp];
         items[temp] = null;
         nextlast = temp;
         size--;
         return remove_item;
     }
 
-    public Item get(int index) {
+    public T get(int index) {
         int cur = (nextfirst + 1) % array_size;
         while(index-- > 0) {
             cur = (cur + 1) % array_size;
