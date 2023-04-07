@@ -46,6 +46,26 @@ public class ArrayDeque<Item> {
         System.out.print("\n");
     }
 
+    public Item removeFirst() {
+        if(size == 0) return null;
+        int temp = (nextfirst + 1) % array_size;
+        Item remove_item = items[temp];
+        items[temp] = null;
+        nextfirst = temp;
+        size--;
+        return remove_item;
+    }
+
+    public Item removeLast() {
+        if(size == 0) return null;
+        int temp = (nextlast - 1 < 0) ? array_size - 1 : nextlast - 1;
+        Item remove_item = items[temp];
+        items[temp] = null;
+        nextlast = temp;
+        size--;
+        return remove_item;
+    }
+
     public Item get(int index) {
         int cur = (nextfirst + 1) % array_size;
         while(index-- > 0) {
