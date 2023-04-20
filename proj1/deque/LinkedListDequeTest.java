@@ -51,8 +51,10 @@ public class LinkedListDequeTest{
         lld2.addLast("back");
 
         LinkedListDeque<String> lld3 = new LinkedListDeque<String>();
+        lld3.addLast("back");
         lld3.addFirst("front");
         lld3.addLast("middle");
+
 
         assertTrue("lld1 should be equal to lld2", lld1.equals(lld2));
 

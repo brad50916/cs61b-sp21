@@ -129,14 +129,12 @@ public class LinkedListDeque<T> implements Iterable<T> {
             if(this.size != oas.size){
                 return false;
             }
-            for(T x : this){
-                int f = 0;
-                for(Object y : oas) {
-                    if(x == y){
-                        f = 1;
-                    }
-                }
-                if(f == 0) return false;
+            Iterator<T> aseer1 = this.iterator();
+            Iterator<T> aseer2 = oas.iterator();
+            while(aseer1.hasNext()) {
+                T i = aseer1.next();
+                T y = aseer2.next();
+                if(i != y) return false;
             }
             return true;
         }
