@@ -120,4 +120,26 @@ public class LinkedListDeque<T> implements Iterable<T> {
     public Iterator<T> iterator() {
         return new LinkedListDequeIterator();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == null) return false;
+        if(this == o) return true;
+        if(o instanceof LinkedListDeque oas) {
+            if(this.size != oas.size){
+                return false;
+            }
+            for(T x : this){
+                int f = 0;
+                for(Object y : oas) {
+                    if(x == y){
+                        f = 1;
+                    }
+                }
+                if(f == 0) return false;
+            }
+            return true;
+        }
+        return false;
+    }
 }

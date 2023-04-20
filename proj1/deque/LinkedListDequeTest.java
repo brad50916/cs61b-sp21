@@ -36,17 +36,41 @@ public class LinkedListDequeTest{
 //        System.out.println("Printing index 0");
 //        System.out.println(lld1.get(0));
 
-//        Iterator<String> aseer = lld1.iterator();
-//        while(aseer.hasNext()) {
-//            String i = aseer.next();
-//            System.out.println(i);
-//        }
+    }
+
+    @Test
+    public void equalTest() {
+        LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
+        lld1.addFirst("front");
+        lld1.addLast("middle");
+        lld1.addLast("back");
+
+        LinkedListDeque<String> lld2 = new LinkedListDeque<String>();
+        lld2.addFirst("front");
+        lld2.addLast("middle");
+        lld2.addLast("back");
+
+        LinkedListDeque<String> lld3 = new LinkedListDeque<String>();
+        lld3.addFirst("front");
+        lld3.addLast("middle");
+
+        assertTrue("lld1 should be equal to lld2", lld1.equals(lld2));
+
+        assertFalse("lld1 should not be equal to lld3", lld1.equals(lld3));
+    }
+    @Test
+    public void iteratorTest() {
+        LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
+        Iterator<String> aseer = lld1.iterator();
+        while(aseer.hasNext()) {
+            String i = aseer.next();
+            System.out.println(i);
+        }
 
         for(String s : lld1) {
             System.out.println(s);
         }
     }
-
     @Test
     /** Adds an item, then removes an item, and ensures that dll is empty afterwards. */
     public void addRemoveTest() {
