@@ -2,10 +2,10 @@ package deque;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-
+import java.util.Iterator;
 
 /** Performs some basic linked list tests. */
-public class LinkedListDequeTest {
+public class LinkedListDequeTest{
 
     @Test
     /** Adds a few things to the list, checking isEmpty() and size() are correct,
@@ -35,6 +35,16 @@ public class LinkedListDequeTest {
 
 //        System.out.println("Printing index 0");
 //        System.out.println(lld1.get(0));
+
+//        Iterator<String> aseer = lld1.iterator();
+//        while(aseer.hasNext()) {
+//            String i = aseer.next();
+//            System.out.println(i);
+//        }
+
+        for(String s : lld1) {
+            System.out.println(s);
+        }
     }
 
     @Test
