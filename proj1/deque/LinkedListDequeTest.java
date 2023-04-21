@@ -29,13 +29,6 @@ public class LinkedListDequeTest{
 
 		lld1.addLast("back");
 		assertEquals(3, lld1.size());
-
-//		System.out.println("Printing out deque: ");
-//		lld1.printDeque();
-
-//        System.out.println("Printing index 0");
-//        System.out.println(lld1.get(0));
-
     }
 
     @Test
@@ -52,17 +45,39 @@ public class LinkedListDequeTest{
 
         LinkedListDeque<String> lld3 = new LinkedListDeque<String>();
         lld3.addLast("back");
-        lld3.addFirst("front");
         lld3.addLast("middle");
+        lld3.addFirst("front");
 
+        LinkedListDeque<String> lld4 = new LinkedListDeque<String>();
+        lld4.addFirst("front");
+        lld4.addLast("middle");
+        lld4.addLast("middle");
 
         assertTrue("lld1 should be equal to lld2", lld1.equals(lld2));
 
         assertFalse("lld1 should not be equal to lld3", lld1.equals(lld3));
+
+        assertFalse("lld1 should not be equal to lld4", lld1.equals(lld4));
+    }
+
+    @Test
+    public void getTest() {
+        LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
+        lld1.addFirst("front");
+        lld1.addLast("middle");
+        lld1.addLast("back");
+
+        System.out.println("Printing index 0");
+        System.out.println(lld1.get(0));
+
+        System.out.println("Printing index 0");
+        System.out.println(lld1.getRecursive(0));
     }
     @Test
     public void iteratorTest() {
         LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
+//        System.out.println("Printing out deque: ");
+//        lld1.printDeque();
         Iterator<String> aseer = lld1.iterator();
         while(aseer.hasNext()) {
             String i = aseer.next();

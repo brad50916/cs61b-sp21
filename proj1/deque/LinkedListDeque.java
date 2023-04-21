@@ -109,12 +109,24 @@ public class LinkedListDeque<T> implements Iterable<T> {
     }
 
     public T get(int index) {
+        if(size == 0) return null;
         Node temp = s1;
         while(index-- >= 0) {
             if(temp == s2) return null;
             temp = temp.next;
         }
         return temp.value;
+    }
+
+    public T getRecursive(int index) {
+        if(size == 0) return null;
+        return getRecursiveHelper(index, s1.next);
+    }
+
+    public T getRecursiveHelper(int index, Node s) {
+        if(s == s2) return null;
+        if(index == 0) return s.value;
+        return getRecursiveHelper(--index, s.next);
     }
 
     public Iterator<T> iterator() {
