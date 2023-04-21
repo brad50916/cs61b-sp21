@@ -64,20 +64,46 @@ public class ArrayDequeTest {
     @Test
     public void iteratorTest() {
         ArrayDeque<Integer> lld1 = new ArrayDeque<Integer>();
-        for(int i = 0; i < 10; i++) {
-            lld1.addFirst(i);
-        }
-        for(int i = 10; i < 20; i++) {
-            lld1.addLast(i);
-        }
+
+        lld1.addFirst(1);
+        lld1.addFirst(2);
+        lld1.addFirst(3);
+        lld1.addLast(4);
+
 //        Iterator<String> aseer = lld1.iterator();
 //        while(aseer.hasNext()) {
 //            String i = aseer.next();
 //            System.out.println(i);
 //        }
-        for(Integer s : lld1) {
-            System.out.println(s);
+//        for(Integer s : lld1) {
+//            System.out.println(s);
+//        }
+    }
+    @Test
+    public void resizeTest() {
+        ArrayDeque<Integer> lld1 = new ArrayDeque<Integer>();
+        for(int i = 0; i < 64; i++) {
+            lld1.addFirst(i);
+            lld1.addLast(i);
         }
+        for(int i = 0; i < 96; i++) {
+            lld1.removeFirst();
+        }
+        assertEquals("array size should be 128", lld1.array_size(), 128);
+        lld1.removeLast();
+        assertEquals("array size should be 128", lld1.array_size(), 64);
+        for(int i = 0; i < 98; i++) {
+            lld1.addFirst(i);
+        }
+        for(int i = 0; i < 65; i++) {
+            lld1.removeLast();
+        }
+        assertEquals("array size should be 128", lld1.array_size(), 256);
+        lld1.removeFirst();
+        assertEquals("array size should be 128", lld1.array_size(), 128);
+//        for(Integer s : lld1) {
+//            System.out.println(s);
+//        }
     }
     @Test
     /** Adds an item, then removes an item, and ensures that dll is empty afterwards. */
