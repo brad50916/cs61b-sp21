@@ -93,4 +93,24 @@ public class ArrayDeque<T> implements Iterable<T> {
             return returnItem;
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == null) return false;
+        if(this == o) return true;
+        if(o instanceof ArrayDeque oas) {
+            if(this.size != oas.size){
+                return false;
+            }
+            Iterator<T> aseer1 = this.iterator();
+            Iterator<T> aseer2 = oas.iterator();
+            while(aseer1.hasNext()) {
+                T i = aseer1.next();
+                T y = aseer2.next();
+                if(i != y) return false;
+            }
+            return true;
+        }
+        return false;
+    }
 }

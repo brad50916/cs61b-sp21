@@ -32,6 +32,35 @@ public class ArrayDequeTest {
 //        System.out.println("Printing index 0");
 //        System.out.println(lld1.get(0));
     }
+
+    @Test
+    public void equalTest() {
+        ArrayDeque<String> lld1 = new ArrayDeque<String>();
+        lld1.addFirst("front");
+        lld1.addLast("middle");
+        lld1.addLast("back");
+
+        ArrayDeque<String> lld2 = new ArrayDeque<String>();
+        lld2.addFirst("front");
+        lld2.addLast("middle");
+        lld2.addLast("back");
+
+        ArrayDeque<String> lld3 = new ArrayDeque<String>();
+        lld3.addLast("back");
+        lld3.addLast("middle");
+        lld3.addFirst("front");
+
+        ArrayDeque<String> lld4 = new ArrayDeque<String>();
+        lld4.addFirst("front");
+        lld4.addLast("middle");
+        lld4.addLast("middle");
+
+        assertTrue("lld1 should be equal to lld2", lld1.equals(lld2));
+
+        assertFalse("lld1 should not be equal to lld3", lld1.equals(lld3));
+
+        assertFalse("lld1 should not be equal to lld4", lld1.equals(lld4));
+    }
     @Test
     public void iteratorTest() {
         ArrayDeque<String> lld1 = new ArrayDeque<String>();
