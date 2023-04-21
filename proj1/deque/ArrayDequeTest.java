@@ -1,6 +1,9 @@
 package deque;
 
 import org.junit.Test;
+
+import java.util.Iterator;
+
 import static org.junit.Assert.*;
 
 public class ArrayDequeTest {
@@ -29,7 +32,27 @@ public class ArrayDequeTest {
 //        System.out.println("Printing index 0");
 //        System.out.println(lld1.get(0));
     }
+    @Test
+    public void iteratorTest() {
+        ArrayDeque<String> lld1 = new ArrayDeque<String>();
+        lld1.addFirst("2");
+        lld1.addFirst("1");
+        lld1.addLast("3");
+        lld1.addLast("4");
+        lld1.addLast("5");
+        lld1.addLast("6");
+        lld1.addLast("7");
+        lld1.addLast("8");
 
+        Iterator<String> aseer = lld1.iterator();
+        while(aseer.hasNext()) {
+            String i = aseer.next();
+//            System.out.println(i);
+        }
+        for(String s : lld1) {
+//            System.out.println(s);
+        }
+    }
     @Test
     /** Adds an item, then removes an item, and ensures that dll is empty afterwards. */
     public void addRemoveTest() {

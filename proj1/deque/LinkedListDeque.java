@@ -22,21 +22,6 @@ public class LinkedListDeque<T> implements Iterable<T> {
         }
     }
 
-    private class LinkedListDequeIterator implements Iterator<T> {
-        private int wizPos;
-        public LinkedListDequeIterator() {
-            wizPos = 0;
-        }
-        public boolean hasNext() {
-            return wizPos < size;
-        }
-        public T next() {
-            T returnItem = get(wizPos);
-            wizPos += 1;
-            return returnItem;
-        }
-    }
-
     public void addFirst(T item) {
         if(size == 0) {
             Node temp = new Node(item, s2, s1);
@@ -131,6 +116,21 @@ public class LinkedListDeque<T> implements Iterable<T> {
 
     public Iterator<T> iterator() {
         return new LinkedListDequeIterator();
+    }
+
+    private class LinkedListDequeIterator implements Iterator<T> {
+        private int wizPos;
+        public LinkedListDequeIterator() {
+            wizPos = 0;
+        }
+        public boolean hasNext() {
+            return wizPos < size;
+        }
+        public T next() {
+            T returnItem = get(wizPos);
+            wizPos += 1;
+            return returnItem;
+        }
     }
 
     @Override

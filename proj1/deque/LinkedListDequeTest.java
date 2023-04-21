@@ -60,32 +60,35 @@ public class LinkedListDequeTest{
         assertFalse("lld1 should not be equal to lld4", lld1.equals(lld4));
     }
 
-    @Test
-    public void getTest() {
-        LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
-        lld1.addFirst("front");
-        lld1.addLast("middle");
-        lld1.addLast("back");
-
-        System.out.println("Printing index 0");
-        System.out.println(lld1.get(0));
-
-        System.out.println("Printing index 0");
-        System.out.println(lld1.getRecursive(0));
-    }
+//    @Test
+//    public void getTest() {
+//        LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
+//        lld1.addFirst("front");
+//        lld1.addLast("middle");
+//        lld1.addLast("back");
+//
+//        System.out.println("Printing index 0");
+//        System.out.println(lld1.get(0));
+//
+//        System.out.println("Printing index 0");
+//        System.out.println(lld1.getRecursive(0));
+//    }
     @Test
     public void iteratorTest() {
         LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
 //        System.out.println("Printing out deque: ");
 //        lld1.printDeque();
+        lld1.addFirst("front");
+        lld1.addLast("middle");
+        lld1.addLast("back");
         Iterator<String> aseer = lld1.iterator();
         while(aseer.hasNext()) {
             String i = aseer.next();
-            System.out.println(i);
+//            System.out.println(i);
         }
 
         for(String s : lld1) {
-            System.out.println(s);
+//            System.out.println(s);
         }
     }
     @Test

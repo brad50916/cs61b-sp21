@@ -1,13 +1,14 @@
 package deque;
 
-public class ArrayDeque<T> {
+import java.util.Iterator;
+public class ArrayDeque<T> implements Iterable<T> {
     private T[] items;
     private int size;
     private int nextfirst;
     private int nextlast;
-    private int array_size = 8;
+    private int SIZE = 8;
     public ArrayDeque() {
-        items = (T[]) new Object[array_size];
+        items = (T[]) new Object[SIZE];
         nextfirst = 4;
         nextlast = 5;
         size = 0;
@@ -16,14 +17,14 @@ public class ArrayDeque<T> {
     public void addFirst(T item) {
         items[nextfirst--] = item;
         if(nextfirst < 0){
-            nextfirst = array_size - 1;
+            nextfirst = SIZE - 1;
         }
         size++;
     }
 
     public void addLast(T item) {
         items[nextlast++] = item;
-        if(nextlast >= array_size){
+        if(nextlast >= SIZE){
             nextlast = 0;
         }
         size++;
@@ -38,17 +39,17 @@ public class ArrayDeque<T> {
     }
 
     public void printDeque() {
-        int cur = (nextfirst + 1) % array_size;
+        int cur = (nextfirst + 1) % SIZE;
         while(cur != nextlast) {
             System.out.print(items[cur] + " ");
-            cur = (cur + 1) % array_size;
+            cur = (cur + 1) % SIZE;
         }
         System.out.print("\n");
     }
 
     public T removeFirst() {
         if(size == 0) return null;
-        int temp = (nextfirst + 1) % array_size;
+        int temp = (nextfirst + 1) % SIZE;
         T remove_item = items[temp];
         items[temp] = null;
         nextfirst = temp;
@@ -58,7 +59,7 @@ public class ArrayDeque<T> {
 
     public T removeLast() {
         if(size == 0) return null;
-        int temp = (nextlast - 1 < 0) ? array_size - 1 : nextlast - 1;
+        int temp = (nextlast - 1 < 0) ? SIZE - 1 : nextlast - 1;
         T remove_item = items[temp];
         items[temp] = null;
         nextlast = temp;
@@ -67,10 +68,29 @@ public class ArrayDeque<T> {
     }
 
     public T get(int index) {
-        int cur = (nextfirst + 1) % array_size;
+        int cur = (nextfirst + 1) % SIZE;
         while(index-- > 0) {
-            cur = (cur + 1) % array_size;
+            cur = (cur + 1) % SIZE;
         }
         return items[cur];
+    }
+
+    public Iterator<T> iterator() {
+        return new ArrayDequeIterator();
+    }
+
+    private class ArrayDequeIterator implements Iterator<T> {
+        private int wizPos;
+        public ArrayDequeIterator() {
+            wizPos = 0;
+        }
+        public boolean hasNext() {
+            return wizPos < size;
+        }
+        public T next() {
+            T returnItem = get(wizPos);
+            wizPos += 1;
+            return returnItem;
+        }
     }
 }
