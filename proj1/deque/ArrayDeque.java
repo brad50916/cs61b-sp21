@@ -13,8 +13,26 @@ public class ArrayDeque<T> implements Iterable<T> {
         nextlast = 5;
         size = 0;
     }
+    public void multipy_size() {
+        nextfirst = (nextfirst + 1) % SIZE;
+        nextlast = (nextlast - 1 < 0) ? SIZE - 1 : nextlast - 1;
+        T[] items_new = (T[]) new Object[SIZE*2];
+        int i = 0;
+        while(nextfirst != nextlast) {
+            items_new[i++] = items[nextfirst];
+            nextfirst = (nextfirst + 1) % SIZE;
+        }
+        items_new[i] = items[nextfirst];
+        items = items_new;
+        SIZE *= 2;
+        nextfirst = SIZE - 1;
+        nextlast = size;
+    }
 
     public void addFirst(T item) {
+        if(size == SIZE) {
+            multipy_size();
+        }
         items[nextfirst--] = item;
         if(nextfirst < 0){
             nextfirst = SIZE - 1;
@@ -23,6 +41,9 @@ public class ArrayDeque<T> implements Iterable<T> {
     }
 
     public void addLast(T item) {
+        if(size == SIZE) {
+            multipy_size();
+        }
         items[nextlast++] = item;
         if(nextlast >= SIZE){
             nextlast = 0;

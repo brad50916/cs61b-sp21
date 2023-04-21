@@ -63,23 +63,20 @@ public class ArrayDequeTest {
     }
     @Test
     public void iteratorTest() {
-        ArrayDeque<String> lld1 = new ArrayDeque<String>();
-        lld1.addFirst("2");
-        lld1.addFirst("1");
-        lld1.addLast("3");
-        lld1.addLast("4");
-        lld1.addLast("5");
-        lld1.addLast("6");
-        lld1.addLast("7");
-        lld1.addLast("8");
-
-        Iterator<String> aseer = lld1.iterator();
-        while(aseer.hasNext()) {
-            String i = aseer.next();
-//            System.out.println(i);
+        ArrayDeque<Integer> lld1 = new ArrayDeque<Integer>();
+        for(int i = 0; i < 10; i++) {
+            lld1.addFirst(i);
         }
-        for(String s : lld1) {
-//            System.out.println(s);
+        for(int i = 10; i < 20; i++) {
+            lld1.addLast(i);
+        }
+//        Iterator<String> aseer = lld1.iterator();
+//        while(aseer.hasNext()) {
+//            String i = aseer.next();
+//            System.out.println(i);
+//        }
+        for(Integer s : lld1) {
+            System.out.println(s);
         }
     }
     @Test
