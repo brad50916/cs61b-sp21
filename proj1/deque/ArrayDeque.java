@@ -14,6 +14,12 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         nextlast = 5;
         size = 0;
     }
+    public ArrayDeque(int newSize) {
+        items = (T[]) new Object[newSize];
+        nextfirst = 4;
+        nextlast = 5;
+        size = 0;
+    }
     public void multipySize() {
         nextfirst = (nextfirst + 1) % SIZE;
         nextlast = (nextlast - 1 < 0) ? SIZE - 1 : nextlast - 1;
