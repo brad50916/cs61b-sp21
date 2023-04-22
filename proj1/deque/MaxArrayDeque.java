@@ -19,4 +19,16 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> {
         }
         return max;
     }
+    public T max(Comparator<T> c) {
+        if(size() == 0) {
+            return null;
+        }
+        T max = get(0);
+        for(int i = 1; i < size(); i++) {
+            if(c.compare(get(i), max) > 0) {
+                max = get(i);
+            }
+        }
+        return max;
+    }
 }
