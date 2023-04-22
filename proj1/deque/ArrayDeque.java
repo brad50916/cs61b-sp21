@@ -16,8 +16,9 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     }
     public ArrayDeque(int newSize) {
         items = (T[]) new Object[newSize];
-        nextfirst = 4;
-        nextlast = 5;
+        SIZE = newSize;
+        nextfirst = 1;
+        nextlast = 2;
         size = 0;
     }
     public void multipySize() {
