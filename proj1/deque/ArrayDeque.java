@@ -1,7 +1,7 @@
 package deque;
 
 import java.util.Iterator;
-public class ArrayDeque<T> implements Iterable<T> {
+public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private T[] items;
     private int size;
     private int nextfirst;
@@ -44,7 +44,7 @@ public class ArrayDeque<T> implements Iterable<T> {
         nextfirst = SIZE - 1;
         nextlast = size;
     }
-
+    @Override
     public void addFirst(T item) {
         if(size == SIZE) {
             multipy_size();
@@ -55,7 +55,7 @@ public class ArrayDeque<T> implements Iterable<T> {
         }
         size++;
     }
-
+    @Override
     public void addLast(T item) {
         if(size == SIZE) {
             multipy_size();
@@ -66,15 +66,17 @@ public class ArrayDeque<T> implements Iterable<T> {
         }
         size++;
     }
-
+    @Override
     public boolean isEmpty() {
         return size == 0;
     }
-
+    @Override
     public int size() {
         return size;
     }
+
     public int array_size() { return SIZE; }
+    @Override
     public void printDeque() {
         int cur = (nextfirst + 1) % SIZE;
         while(cur != nextlast) {
@@ -83,7 +85,7 @@ public class ArrayDeque<T> implements Iterable<T> {
         }
         System.out.print("\n");
     }
-
+    @Override
     public T removeFirst() {
         if(size == 0) return null;
         double percent = (double)(size - 1)/SIZE;
@@ -97,7 +99,7 @@ public class ArrayDeque<T> implements Iterable<T> {
         size--;
         return remove_item;
     }
-
+    @Override
     public T removeLast() {
         if(size == 0) return null;
         double percent = (double)(size - 1)/SIZE;
@@ -111,7 +113,7 @@ public class ArrayDeque<T> implements Iterable<T> {
         size--;
         return remove_item;
     }
-
+    @Override
     public T get(int index) {
         int cur = (nextfirst + 1) % SIZE;
         while(index-- > 0) {
