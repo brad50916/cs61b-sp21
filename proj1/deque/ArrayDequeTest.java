@@ -129,18 +129,18 @@ public class ArrayDequeTest {
         for(int i = 0; i < 96; i++) {
             lld1.removeFirst();
         }
-        assertEquals("array size should be 128", lld1.array_size(), 128);
+        assertEquals("array size should be 128", lld1.arraySize(), 128);
         lld1.removeLast();
-        assertEquals("array size should be 128", lld1.array_size(), 64);
+        assertEquals("array size should be 128", lld1.arraySize(), 64);
         for(int i = 0; i < 98; i++) {
             lld1.addFirst(i);
         }
         for(int i = 0; i < 65; i++) {
             lld1.removeLast();
         }
-        assertEquals("array size should be 128", lld1.array_size(), 256);
+        assertEquals("array size should be 128", lld1.arraySize(), 256);
         lld1.removeFirst();
-        assertEquals("array size should be 128", lld1.array_size(), 128);
+        assertEquals("array size should be 128", lld1.arraySize(), 128);
 //        for(Integer s : lld1) {
 //            System.out.println(s);
 //        }

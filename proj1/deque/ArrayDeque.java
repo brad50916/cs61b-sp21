@@ -7,79 +7,78 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private int nextfirst;
     private int nextlast;
     private int SIZE = 8;
+    public static final int MINSIZE = 16;
     public ArrayDeque() {
         items = (T[]) new Object[SIZE];
         nextfirst = 4;
         nextlast = 5;
         size = 0;
     }
-    public void multipy_size() {
+    public void multipySize() {
         nextfirst = (nextfirst + 1) % SIZE;
         nextlast = (nextlast - 1 < 0) ? SIZE - 1 : nextlast - 1;
-        T[] items_new = (T[]) new Object[SIZE*2];
+        T[] itemsNew = (T[]) new Object[SIZE * 2];
         int i = 0;
-        while(nextfirst != nextlast) {
-            items_new[i++] = items[nextfirst];
+        while (nextfirst != nextlast) {
+            itemsNew[i++] = items[nextfirst];
             nextfirst = (nextfirst + 1) % SIZE;
         }
-        items_new[i] = items[nextfirst];
-        items = items_new;
+        itemsNew[i] = items[nextfirst];
+        items = itemsNew;
         SIZE *= 2;
         nextfirst = SIZE - 1;
         nextlast = size;
     }
 
-    public void divide_size() {
+    public void divideSize() {
         nextfirst = (nextfirst + 1) % SIZE;
         nextlast = (nextlast - 1 < 0) ? SIZE - 1 : nextlast - 1;
-        T[] items_new = (T[]) new Object[SIZE/2];
+        T[] itemsNew = (T[]) new Object[SIZE / 2];
         int i = 0;
-        while(nextfirst != nextlast) {
-            items_new[i++] = items[nextfirst];
+        while (nextfirst != nextlast) {
+            itemsNew[i++] = items[nextfirst];
             nextfirst = (nextfirst + 1) % SIZE;
         }
-        items_new[i] = items[nextfirst];
-        items = items_new;
+        itemsNew[i] = items[nextfirst];
+        items = itemsNew;
         SIZE /= 2;
         nextfirst = SIZE - 1;
         nextlast = size;
     }
     @Override
     public void addFirst(T item) {
-        if(size == SIZE) {
-            multipy_size();
+        if (size == SIZE) {
+            multipySize();
         }
         items[nextfirst--] = item;
-        if(nextfirst < 0){
+        if (nextfirst < 0) {
             nextfirst = SIZE - 1;
         }
         size++;
     }
     @Override
     public void addLast(T item) {
-        if(size == SIZE) {
-            multipy_size();
+        if (size == SIZE) {
+            multipySize();
         }
         items[nextlast++] = item;
-        if(nextlast >= SIZE){
+        if (nextlast >= SIZE) {
             nextlast = 0;
         }
         size++;
-    }
-    @Override
-    public boolean isEmpty() {
-        return size == 0;
     }
     @Override
     public int size() {
         return size;
     }
 
-    public int array_size() { return SIZE; }
+    public int arraySize() {
+        return SIZE;
+    }
     @Override
     public void printDeque() {
         int cur = (nextfirst + 1) % SIZE;
-        while(cur != nextlast) {
+        while (cur != nextlast) {
             System.out.print(items[cur] + " ");
             cur = (cur + 1) % SIZE;
         }
@@ -87,36 +86,40 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     }
     @Override
     public T removeFirst() {
-        if(size == 0) return null;
-        double percent = (double)(size - 1)/SIZE;
-        if(SIZE >= 16 &&  percent < 0.25) {
-            divide_size();
+        if (size == 0) {
+            return null;
+        }
+        double percent = (double) (size - 1) / SIZE;
+        if (SIZE >= MINSIZE &&  percent < 0.25) {
+            divideSize();
         }
         int temp = (nextfirst + 1) % SIZE;
-        T remove_item = items[temp];
+        T removeItem = items[temp];
         items[temp] = null;
         nextfirst = temp;
         size--;
-        return remove_item;
+        return removeItem;
     }
     @Override
     public T removeLast() {
-        if(size == 0) return null;
-        double percent = (double)(size - 1)/SIZE;
-        if(SIZE >= 16 && percent < 0.25) {
-            divide_size();
+        if (size == 0) {
+            return null;
+        }
+        double percent = (double) (size - 1) / SIZE;
+        if (SIZE >= MINSIZE && percent < 0.25) {
+            divideSize();
         }
         int temp = (nextlast - 1 < 0) ? SIZE - 1 : nextlast - 1;
-        T remove_item = items[temp];
+        T removeItem = items[temp];
         items[temp] = null;
         nextlast = temp;
         size--;
-        return remove_item;
+        return removeItem;
     }
     @Override
     public T get(int index) {
         int cur = (nextfirst + 1) % SIZE;
-        while(index-- > 0) {
+        while (index-- > 0) {
             cur = (cur + 1) % SIZE;
         }
         return items[cur];
@@ -143,18 +146,24 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     @Override
     public boolean equals(Object o) {
-        if(o == null) return false;
-        if(this == o) return true;
-        if(o instanceof ArrayDeque oas) {
-            if(this.size != oas.size){
+        if (o == null) {
+            return false;
+        }
+        if (this == o) {
+            return true;
+        }
+        if (o instanceof ArrayDeque oas) {
+            if (this.size != oas.size) {
                 return false;
             }
             Iterator<T> aseer1 = this.iterator();
             Iterator<T> aseer2 = oas.iterator();
-            while(aseer1.hasNext()) {
+            while (aseer1.hasNext()) {
                 T i = aseer1.next();
                 T y = aseer2.next();
-                if(i != y) return false;
+                if (i != y) {
+                    return false;
+                }
             }
             return true;
         }
