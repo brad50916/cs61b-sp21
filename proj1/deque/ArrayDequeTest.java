@@ -1,5 +1,6 @@
 package deque;
 
+import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -7,6 +8,43 @@ import java.util.Iterator;
 import static org.junit.Assert.*;
 
 public class ArrayDequeTest {
+    @Test
+    public void randomizedTest(){
+        LinkedListDeque<Integer> L = new LinkedListDeque<>();
+        ArrayDeque<Integer> B = new ArrayDeque<>();
+
+        int N = 10000;
+        for (int i = 0; i < N; i += 1) {
+            int operationNumber = StdRandom.uniform(0, 7);
+            if (operationNumber == 0) {
+                // addFirst
+                int randVal = StdRandom.uniform(0, 100);
+                L.addFirst(randVal);
+                B.addFirst(randVal);
+            } else if (operationNumber == 1) {
+                // addLast
+                int randVal = StdRandom.uniform(0, 100);
+                L.addLast(randVal);
+                B.addLast(randVal);
+            } else if (operationNumber == 2) {
+                // isEmpty
+                assertEquals("isEmpty should be equal", L.isEmpty(), B.isEmpty());
+            } else if (operationNumber == 3) {
+                // size
+                assertEquals("size should be equal", L.size(), B.size());
+            } else if (operationNumber == 4) {
+                // removeFirst
+                assertEquals("removefirst should be equal", L.removeFirst(), B.removeFirst());
+            } else if (operationNumber == 5) {
+                // removeLast
+                assertEquals("removeLast should be equal", L.removeLast(), B.removeLast());
+            } else if (operationNumber == 6 && L.size() != 0){
+                // get
+                int randVal = StdRandom.uniform(0, L.size());
+                assertEquals("get should be equal", L.get(randVal), B.get(randVal));
+            }
+        }
+    }
     @Test
     public void addIsEmptySizeTest() {
 
@@ -35,6 +73,7 @@ public class ArrayDequeTest {
 
     @Test
     public void equalTest() {
+
         ArrayDeque<String> lld1 = new ArrayDeque<String>();
         lld1.addFirst("front");
         lld1.addLast("middle");
@@ -63,6 +102,7 @@ public class ArrayDequeTest {
     }
     @Test
     public void iteratorTest() {
+
         ArrayDeque<Integer> lld1 = new ArrayDeque<Integer>();
 
         lld1.addFirst(1);
