@@ -151,21 +151,47 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         if (this == o) {
             return true;
         }
-        if (o instanceof LinkedListDeque oas) {
-            if (this.size != oas.size) {
+        if (this.getClass() != o.getClass()) {
+            return false;
+        }
+        LinkedListDeque<T> oas = (LinkedListDeque<T>) o;
+        if (this.size != oas.size) {
+            return false;
+        }
+        Iterator<T> aseer1 = this.iterator();
+        Iterator<T> aseer2 = oas.iterator();
+        while (aseer1.hasNext()) {
+            T i = aseer1.next();
+            T y = aseer2.next();
+            if (i != y) {
                 return false;
             }
-            Iterator<T> aseer1 = this.iterator();
-            Iterator<T> aseer2 = oas.iterator();
-            while (aseer1.hasNext()) {
-                T i = aseer1.next();
-                T y = aseer2.next();
-                if (i != y) {
-                    return false;
-                }
-            }
-            return true;
         }
-        return false;
+        return true;
     }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (o == null) {
+//            return false;
+//        }
+//        if (this == o) {
+//            return true;
+//        }
+//        if (o instanceof LinkedListDeque oas) {
+//            if (this.size != oas.size) {
+//                return false;
+//            }
+//            Iterator<T> aseer1 = this.iterator();
+//            Iterator<T> aseer2 = oas.iterator();
+//            while (aseer1.hasNext()) {
+//                T i = aseer1.next();
+//                T y = aseer2.next();
+//                if (i != y) {
+//                    return false;
+//                }
+//            }
+//            return true;
+//        }
+//        return false;
+//    }
 }
