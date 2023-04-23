@@ -151,28 +151,6 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if (this == o) {
-            return true;
-        }
-        if (this.getClass().getInterfaces()[1] != o.getClass().getInterfaces()[1]) {
-            return false;
-        }
-        Deque<T> oas = (Deque<T>) o;
-        if (this.size != oas.size()) {
-            return false;
-        }
-        for (int i = 0; i < this.size; i++) {
-            if(this.get(i) != oas.get(i)) {
-                return false;
-            }
-        }
-        return true;
-    }
 //    @Override
 //    public boolean equals(Object o) {
 //        if (o == null) {
@@ -181,17 +159,39 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 //        if (this == o) {
 //            return true;
 //        }
-//        if (o instanceof Deque oas) {
-//            if (this.size != oas.size()) {
+//        if (this.getClass().getInterfaces()[1] != o.getClass().getInterfaces()[1]) {
+//            return false;
+//        }
+//        Deque<T> oas = (Deque<T>) o;
+//        if (this.size != oas.size()) {
+//            return false;
+//        }
+//        for (int i = 0; i < this.size; i++) {
+//            if (this.get(i) != oas.get(i)) {
 //                return false;
 //            }
-//            for (int i = 0; i < this.size; i++) {
-//                if(this.get(i) != oas.get(i)) {
-//                    return false;
-//                }
-//            }
-//            return true;
 //        }
-//        return false;
+//        return true;
 //    }
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (this == o) {
+            return true;
+        }
+        if (o instanceof Deque oas) {
+            if (this.size != oas.size()) {
+                return false;
+            }
+            for (int i = 0; i < this.size; i++) {
+                if(this.get(i) != oas.get(i)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 }
