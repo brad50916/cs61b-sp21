@@ -7,21 +7,21 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private int nextfirst;
     private int nextlast;
     private int SIZE = 8;
-    public static final int MINSIZE = 16;
+    private static final int MINSIZE = 16;
     public ArrayDeque() {
         items = (T[]) new Object[SIZE];
         nextfirst = 4;
         nextlast = 5;
         size = 0;
     }
-    public ArrayDeque(int newSize) {
-        items = (T[]) new Object[newSize];
-        SIZE = newSize;
-        nextfirst = 1;
-        nextlast = 2;
-        size = 0;
-    }
-    public void multipySize() {
+//    public ArrayDeque(int newSize) {
+//        items = (T[]) new Object[newSize];
+//        SIZE = newSize;
+//        nextfirst = 1;
+//        nextlast = 2;
+//        size = 0;
+//    }
+    private void multipySize() {
         nextfirst = (nextfirst + 1) % SIZE;
         nextlast = (nextlast - 1 < 0) ? SIZE - 1 : nextlast - 1;
         T[] itemsNew = (T[]) new Object[SIZE * 2];
@@ -37,7 +37,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         nextlast = size;
     }
 
-    public void divideSize() {
+    private void divideSize() {
         nextfirst = (nextfirst + 1) % SIZE;
         nextlast = (nextlast - 1 < 0) ? SIZE - 1 : nextlast - 1;
         T[] itemsNew = (T[]) new Object[SIZE / 2];
@@ -79,7 +79,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         return size;
     }
 
-    public int arraySize() {
+    private int arraySize() {
         return SIZE;
     }
     @Override
@@ -138,7 +138,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     private class ArrayDequeIterator implements Iterator<T> {
         private int wizPos;
-        public ArrayDequeIterator() {
+        ArrayDequeIterator() {
             wizPos = 0;
         }
         public boolean hasNext() {
@@ -159,19 +159,15 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         if (this == o) {
             return true;
         }
-        if (this.getClass() != o.getClass()) {
+        if (this.getClass().getInterfaces()[1] != o.getClass().getInterfaces()[1]) {
             return false;
         }
-        ArrayDeque<T> oas = (ArrayDeque<T>) o;
-        if (this.size != oas.size) {
+        Deque<T> oas = (Deque<T>) o;
+        if (this.size != oas.size()) {
             return false;
         }
-        Iterator<T> aseer1 = this.iterator();
-        Iterator<T> aseer2 = oas.iterator();
-        while (aseer1.hasNext()) {
-            T i = aseer1.next();
-            T y = aseer2.next();
-            if (i != y) {
+        for (int i = 0; i < this.size; i++) {
+            if(this.get(i) != oas.get(i)) {
                 return false;
             }
         }
@@ -185,16 +181,12 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 //        if (this == o) {
 //            return true;
 //        }
-//        if (o instanceof ArrayDeque oas) {
-//            if (this.size != oas.size) {
+//        if (o instanceof Deque oas) {
+//            if (this.size != oas.size()) {
 //                return false;
 //            }
-//            Iterator<T> aseer1 = this.iterator();
-//            Iterator<T> aseer2 = oas.iterator();
-//            while (aseer1.hasNext()) {
-//                T i = aseer1.next();
-//                T y = aseer2.next();
-//                if (i != y) {
+//            for (int i = 0; i < this.size; i++) {
+//                if(this.get(i) != oas.get(i)) {
 //                    return false;
 //                }
 //            }

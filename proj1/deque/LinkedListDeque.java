@@ -15,7 +15,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         private T value;
         private Node next;
         private Node prev;
-        public Node(T i, Node n, Node p) {
+        Node(T i, Node n, Node p) {
             value = i;
             next = n;
             prev = p;
@@ -114,7 +114,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         return getRecursiveHelper(index, s1.next);
     }
 
-    public T getRecursiveHelper(int index, Node s) {
+    private T getRecursiveHelper(int index, Node s) {
         if (s == s2) {
             return null;
         }
@@ -130,7 +130,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
 
     private class LinkedListDequeIterator implements Iterator<T> {
         private int wizPos;
-        public LinkedListDequeIterator() {
+        LinkedListDequeIterator() {
             wizPos = 0;
         }
         public boolean hasNext() {
@@ -151,19 +151,12 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         if (this == o) {
             return true;
         }
-        if (this.getClass() != o.getClass()) {
+        if (this.getClass().getInterfaces()[1] != o.getClass().getInterfaces()[1]) {
             return false;
         }
-        LinkedListDeque<T> oas = (LinkedListDeque<T>) o;
-        if (this.size != oas.size) {
-            return false;
-        }
-        Iterator<T> aseer1 = this.iterator();
-        Iterator<T> aseer2 = oas.iterator();
-        while (aseer1.hasNext()) {
-            T i = aseer1.next();
-            T y = aseer2.next();
-            if (i != y) {
+        Deque<T> oas = (Deque<T>) o;
+        for (int i = 0; i < this.size; i++) {
+            if(this.get(i) != oas.get(i)) {
                 return false;
             }
         }
@@ -177,16 +170,12 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
 //        if (this == o) {
 //            return true;
 //        }
-//        if (o instanceof LinkedListDeque oas) {
-//            if (this.size != oas.size) {
+//        if (o instanceof Deque oas) {
+//            if (this.size != oas.size()) {
 //                return false;
 //            }
-//            Iterator<T> aseer1 = this.iterator();
-//            Iterator<T> aseer2 = oas.iterator();
-//            while (aseer1.hasNext()) {
-//                T i = aseer1.next();
-//                T y = aseer2.next();
-//                if (i != y) {
+//            for (int i = 0; i < this.size; i++) {
+//                if(this.get(i) != oas.get(i)) {
 //                    return false;
 //                }
 //            }
