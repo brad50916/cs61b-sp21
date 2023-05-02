@@ -84,7 +84,9 @@ public class CapersRepository {
      * Also prints out the dog's information using toString().
      */
     public static void makeDog(String name, String breed, int age) {
-        // TODO
+        Dog curDog = new Dog(name, breed, age);
+        System.out.println(curDog);
+        curDog.saveDog();
     }
 
     /**
