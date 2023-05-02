@@ -2,7 +2,7 @@ package capers;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.io.Serializable;
 import static capers.Utils.*;
 
 /** A repository for Capers 
@@ -34,12 +34,17 @@ public class CapersRepository {
      *    - story -- file containing the current story
      */
     public static void setupPersistence() {
-        CAPERS_FOLDER.mkdir();
-        DOGS_FOLDER.mkdir();
-        try {
-            STORY_PATH.createNewFile();
-        } catch (IOException excp) {
-            System.out.println("has existed");
+        if (!DOGS_FOLDER.exists()) {
+            DOGS_FOLDER.mkdir();
+        }
+        if (!CAPERS_FOLDER.exists()) {
+            CAPERS_FOLDER.mkdir();
+        }
+        if (!STORY_PATH.exists()) {
+            Model m = new Model();
+            File outFile = STORY_PATH;
+            // Serializing the Model object
+            writeObject(outFile, m);
         }
     }
 
@@ -48,8 +53,29 @@ public class CapersRepository {
      * to a file called `story` in the .capers directory.
      * @param text String of the text to be appended to the story
      */
+    private static class Model implements Serializable {
+        private String s;
+
+        public void addText(String s) {
+            if (this.s == null) {
+                this.s = s + "\n";
+            } else {
+                this.s += s + "\n";
+            }
+        }
+        public void print() {
+            System.out.print(this.s);
+        }
+    }
     public static void writeStory(String text) {
-        // TODO
+        Model m;
+        // Deserializing the Model object
+        m = readObject(STORY_PATH, Model.class);
+        m.addText(text);
+        m.print();
+
+        // Serializing the Model object
+        writeObject(STORY_PATH, m);
     }
 
     /**
