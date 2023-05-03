@@ -38,8 +38,14 @@ public class Dog implements Serializable {
      * @return Dog read from file
      */
     public static Dog fromFile(String name) {
-        // TODO (hint: look at the Utils file)
-        return null;
+        File inFile = Utils.join(".capers", "dogs", name);
+        if (inFile.exists()) {
+            Dog d = readObject(inFile, Dog.class);
+            return d;
+        } else {
+            System.out.println("dog is not existed");
+            return null;
+        }
     }
 
     /**
@@ -54,17 +60,11 @@ public class Dog implements Serializable {
      * Saves a dog to a file for future use.
      */
     public void saveDog() {
-        // TODO (hint: don't forget dog names are unique)
         File outFile = Utils.join(".capers", "dogs", this.name);
         if (!outFile.exists()) {
-            try {
-                ObjectOutputStream out =
-                        new ObjectOutputStream(new FileOutputStream(outFile));
-                out.writeObject(this);
-                out.close();
-            } catch (IOException excp) {
-                System.out.println("Serializable fail");
-            }
+            writeObject(outFile,this);
+        } else {
+            System.out.println("dog has been existed");
         }
     }
 

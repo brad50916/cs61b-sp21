@@ -82,6 +82,10 @@ public class CapersRepository {
      * @param name String name of the Dog whose birthday we're celebrating.
      */
     public static void celebrateBirthday(String name) {
-        // TODO
+        Dog d = new Dog(null, null, 0);
+        d = d.fromFile(name);
+        if (d != null) {
+            System.out.println(d);
+        }
     }
 }
