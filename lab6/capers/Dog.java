@@ -53,7 +53,7 @@ public class Dog implements Serializable {
      */
     public void haveBirthday() {
         age += 1;
-        System.out.println(toString());
+        System.out.println(this);
         System.out.println("Happy birthday! Woof! Woof!");
     }
     /**
@@ -61,11 +61,7 @@ public class Dog implements Serializable {
      */
     public void saveDog() {
         File outFile = Utils.join(".capers", "dogs", this.name);
-        if (!outFile.exists()) {
-            writeObject(outFile,this);
-        } else {
-            System.out.println("dog has been existed");
-        }
+        writeObject(outFile,this);
     }
 
     @Override

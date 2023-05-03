@@ -85,7 +85,9 @@ public class CapersRepository {
         Dog d = new Dog(null, null, 0);
         d = d.fromFile(name);
         if (d != null) {
-            System.out.println(d);
+            d.haveBirthday();
+            d.saveDog();
         }
+
     }
 }
