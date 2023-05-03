@@ -59,15 +59,8 @@ public class Dog implements Serializable {
      */
     public void saveDog() {
 //        File outFile = Utils.join(".capers", "dogs", this.name);
-//        writeObject(outFile, this);
         File outFile = Utils.join(".capers", this.name);
-        try {
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outFile));
-            out.writeObject(this);
-            out.close();
-        } catch (IOException excp1) {
-            System.out.println("3");
-        }
+        writeObject(outFile, this);
     }
 
     @Override
