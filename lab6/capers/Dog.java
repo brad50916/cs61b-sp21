@@ -56,13 +56,15 @@ public class Dog implements Serializable {
     public void saveDog() {
         // TODO (hint: don't forget dog names are unique)
         File outFile = Utils.join(".capers", "dogs", this.name);
-        try {
-            ObjectOutputStream out =
-                    new ObjectOutputStream(new FileOutputStream(outFile));
-            out.writeObject(this);
-            out.close();
-        } catch (IOException excp) {
-            System.out.println("Serializable fail");
+        if (!outFile.exists()) {
+            try {
+                ObjectOutputStream out =
+                        new ObjectOutputStream(new FileOutputStream(outFile));
+                out.writeObject(this);
+                out.close();
+            } catch (IOException excp) {
+                System.out.println("Serializable fail");
+            }
         }
     }
 
