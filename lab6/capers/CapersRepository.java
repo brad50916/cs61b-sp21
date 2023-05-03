@@ -41,10 +41,10 @@ public class CapersRepository {
             CAPERS_FOLDER.mkdir();
         }
         if (!STORY_PATH.exists()) {
-            Model m = new Model();
             File outFile = STORY_PATH;
             // Serializing the Model object
-            writeObject(outFile, m);
+            String s = "";
+            writeContents(STORY_PATH,s);
         }
     }
 
@@ -53,29 +53,15 @@ public class CapersRepository {
      * to a file called `story` in the .capers directory.
      * @param text String of the text to be appended to the story
      */
-    private static class Model implements Serializable {
-        private String s;
-
-        public void addText(String s) {
-            if (this.s == null) {
-                this.s = s + "\n";
-            } else {
-                this.s += s + "\n";
-            }
-        }
-        public void print() {
-            System.out.print(this.s);
-        }
-    }
     public static void writeStory(String text) {
-        Model m;
+        String s;
         // Deserializing the Model object
-        m = readObject(STORY_PATH, Model.class);
-        m.addText(text);
-        m.print();
+        s = readContentsAsString(STORY_PATH);
+        s += text + "\n";
+        System.out.print(s);
 
         // Serializing the Model object
-        writeObject(STORY_PATH, m);
+        writeContents(STORY_PATH, s);
     }
 
     /**
