@@ -1,12 +1,13 @@
 package bstmap;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 
-public class BSTMap<K,V> implements Map61B<K,V> {
+public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
     BSTNode root;
     public BSTMap () {
-        root = new BSTNode(null, null, null, null);
+        root = null;
     }
     private class BSTNode {
         private K key;
@@ -23,6 +24,23 @@ public class BSTMap<K,V> implements Map61B<K,V> {
             this.key = key;
             this.value = value;
         }
+    }
+
+    /* Associates the specified value with the specified key in this map. */
+    @Override
+    public void put(K key, V value) {
+        putRecursive(key, value, root);
+    };
+    public BSTNode putRecursive(K key, V value, BSTNode cur) {
+        if (cur == null) {
+            return new BSTNode(key, value, null, null);
+        }
+        if (key.compareTo(cur.key) < 0) {
+            cur.left = putRecursive(key, value, cur.left);
+        } else if (key.compareTo(cur.key) > 0) {
+            cur.right = putRecursive(key, value, cur.right);
+        }
+        return cur;
     }
 
     /** Removes all of the mappings from this map. */
@@ -48,12 +66,6 @@ public class BSTMap<K,V> implements Map61B<K,V> {
     /* Returns the number of key-value mappings in this map. */
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
-    };
-
-    /* Associates the specified value with the specified key in this map. */
-    @Override
-    public void put(K key, V value) {
         throw new UnsupportedOperationException();
     };
 
@@ -86,6 +98,13 @@ public class BSTMap<K,V> implements Map61B<K,V> {
     }
 
     public void printInOrder() {
-        throw new UnsupportedOperationException();
+        printInorderHelp(root);
+    }
+
+    public void printInorderHelp(BSTNode node) {
+        if (node == null) return;
+        System.out.println(node.value);
+        printInorderHelp(node.left);
+        printInorderHelp(node.right);
     }
 }
