@@ -7,9 +7,9 @@ public class BSTMap<K,V> implements Map61B<K,V> {
     public BSTMap () {
 
     }
-
-    private class BSTNode<K> {
+    private class BSTNode {
         private K key;
+        private V value;
         private BSTNode left;
         private BSTNode right;
         public BSTNode(K key, BSTNode left, BSTNode right) {
@@ -21,6 +21,7 @@ public class BSTMap<K,V> implements Map61B<K,V> {
             this.key = key;
         }
     }
+
     /** Removes all of the mappings from this map. */
     @Override
     public void clear() {
