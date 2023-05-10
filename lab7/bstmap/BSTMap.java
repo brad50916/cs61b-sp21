@@ -29,9 +29,9 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
-        putRecursive(key, value, root);
+        root = putRecursive(key, value, root);
     };
-    public BSTNode putRecursive(K key, V value, BSTNode cur) {
+    private BSTNode putRecursive(K key, V value, BSTNode cur) {
         if (cur == null) {
             return new BSTNode(key, value, null, null);
         }
@@ -101,7 +101,7 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
         printInorderHelp(root);
     }
 
-    public void printInorderHelp(BSTNode node) {
+    private void printInorderHelp(BSTNode node) {
         if (node == null) return;
         System.out.println(node.value);
         printInorderHelp(node.left);
