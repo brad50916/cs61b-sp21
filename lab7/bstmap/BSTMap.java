@@ -4,6 +4,23 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class BSTMap<K,V> implements Map61B<K,V> {
+    public BSTMap () {
+
+    }
+
+    private class BSTNode<K> {
+        private K key;
+        private BSTNode left;
+        private BSTNode right;
+        public BSTNode(K key, BSTNode left, BSTNode right) {
+            this.key = key;
+            this.left = left;
+            this.right = right;
+        }
+        public BSTNode(K key) {
+            this.key = key;
+        }
+    }
     /** Removes all of the mappings from this map. */
     @Override
     public void clear() {
@@ -64,7 +81,7 @@ public class BSTMap<K,V> implements Map61B<K,V> {
         throw new UnsupportedOperationException();
     }
 
-    public printInOrder() {
+    public void printInOrder() {
         throw new UnsupportedOperationException();
     }
 }
