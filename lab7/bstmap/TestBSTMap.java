@@ -17,7 +17,7 @@ public class TestBSTMap {
 	    	fail();
 	    }
     }
-    // put and printinorder test
+    // put and printinorder and size test
     @Test
     public void inorderTest() {
         BSTMap<String, Integer> b = new BSTMap<String, Integer>();
@@ -25,6 +25,7 @@ public class TestBSTMap {
             b.put("hi" + i, 1+i);
         }
         b.printInOrder();
+        System.out.println(b.size());
     }
     //assumes put/size/containsKey/get work
     @Test

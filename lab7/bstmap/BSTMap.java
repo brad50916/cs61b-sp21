@@ -6,8 +6,10 @@ import java.util.Set;
 
 public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
     BSTNode root;
+    int size;
     public BSTMap () {
         root = null;
+        size = 0;
     }
     private class BSTNode {
         private K key;
@@ -33,6 +35,7 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
     };
     private BSTNode putRecursive(K key, V value, BSTNode cur) {
         if (cur == null) {
+            size++;
             return new BSTNode(key, value, null, null);
         }
         if (key.compareTo(cur.key) < 0) {
@@ -66,7 +69,7 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
     /* Returns the number of key-value mappings in this map. */
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return size;
     };
 
     /* Returns a Set view of the keys contained in this map. Not required for Lab 7.
