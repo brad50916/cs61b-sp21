@@ -4,21 +4,24 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class BSTMap<K,V> implements Map61B<K,V> {
+    BSTNode root;
     public BSTMap () {
-
+        root = new BSTNode(null, null, null, null);
     }
     private class BSTNode {
         private K key;
         private V value;
         private BSTNode left;
         private BSTNode right;
-        public BSTNode(K key, BSTNode left, BSTNode right) {
+        public BSTNode(K key, V value, BSTNode left, BSTNode right) {
             this.key = key;
+            this.value = value;
             this.left = left;
             this.right = right;
         }
-        public BSTNode(K key) {
+        public BSTNode(K key, V value) {
             this.key = key;
+            this.value = value;
         }
     }
 
