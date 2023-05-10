@@ -24,8 +24,8 @@ public class TestBSTMap {
         for (int i = 0; i < 10; i++) {
             b.put("hi" + i, 1+i);
         }
-        b.printInOrder();
-        System.out.println(b.size());
+//        b.printInOrder();
+//        System.out.println(b.size());
     }
     //assumes put/size/containsKey/get work
     @Test

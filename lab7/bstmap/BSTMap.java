@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
-    BSTNode root;
+    private BSTNode root;
     int size;
     public BSTMap () {
         root = null;
@@ -31,17 +31,17 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
-        root = putRecursive(key, value, root);
+        root = put(key, value, root);
     };
-    private BSTNode putRecursive(K key, V value, BSTNode cur) {
+    private BSTNode put(K key, V value, BSTNode cur) {
         if (cur == null) {
             size++;
             return new BSTNode(key, value, null, null);
         }
         if (key.compareTo(cur.key) < 0) {
-            cur.left = putRecursive(key, value, cur.left);
+            cur.left = put(key, value, cur.left);
         } else if (key.compareTo(cur.key) > 0) {
-            cur.right = putRecursive(key, value, cur.right);
+            cur.right = put(key, value, cur.right);
         }
         return cur;
     }
@@ -56,17 +56,17 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
     /* Returns true if this map contains a mapping for the specified key. */
     @Override
     public boolean containsKey(K key) {
-        return containsKeyHelp(key, root);
+        return containsKey(key, root);
     };
 
-    private boolean containsKeyHelp(K key, BSTNode cur) {
+    private boolean containsKey(K key, BSTNode cur) {
         if (cur == null) return false;
         int com = cur.key.compareTo(key);
         if (com == 0) return true;
         else if (com < 0) {
-            return containsKeyHelp(key, cur.right);
+            return containsKey(key, cur.right);
         } else {
-            return containsKeyHelp(key, cur.left);
+            return containsKey(key, cur.left);
         }
     }
 
@@ -75,17 +75,17 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
      */
     @Override
     public V get(K key) {
-        return getHelp(key, root);
+        return get(key, root);
     }
 
-    private V getHelp(K key, BSTNode cur) {
+    private V get(K key, BSTNode cur) {
         if (cur == null) return null;
         int com = cur.key.compareTo(key);
         if (com == 0) return cur.value;
         else if (com < 0) {
-            return getHelp(key, cur.right);
+            return get(key, cur.right);
         } else {
-            return getHelp(key, cur.left);
+            return get(key, cur.left);
         }
     }
 
