@@ -4,10 +4,10 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
-public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
+public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     private BSTNode root;
-    int size;
-    public BSTMap () {
+    private int size;
+    public BSTMap() {
         root = null;
         size = 0;
     }
@@ -60,9 +60,13 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
     };
 
     private boolean containsKey(K key, BSTNode cur) {
-        if (cur == null) return false;
+        if (cur == null) {
+            return false;
+        }
         int com = cur.key.compareTo(key);
-        if (com == 0) return true;
+        if (com == 0) {
+            return true;
+        }
         else if (com < 0) {
             return containsKey(key, cur.right);
         } else {
@@ -79,9 +83,13 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
     }
 
     private V get(K key, BSTNode cur) {
-        if (cur == null) return null;
+        if (cur == null) {
+            return null;
+        }
         int com = cur.key.compareTo(key);
-        if (com == 0) return cur.value;
+        if (com == 0) {
+            return cur.value;
+        }
         else if (com < 0) {
             return get(key, cur.right);
         } else {
@@ -128,7 +136,9 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
     }
 
     private void printInorderHelp(BSTNode node) {
-        if (node == null) return;
+        if (node == null) {
+            return;
+        }
         System.out.println(node.value);
         printInorderHelp(node.left);
         printInorderHelp(node.right);
