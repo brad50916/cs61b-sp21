@@ -31,6 +31,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     private Collection<Node>[] buckets;
     private static final int initialSize = 16;
     private static double loadFactor = 0.75;
+    private int size = 0;
     // You should probably define some more!
 
     /** Constructors */
@@ -95,6 +96,9 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     private Collection<Node>[] createTable(int tableSize) {
         buckets = new Collection[tableSize];
+        for (int i = 0; i < tableSize; i++) {
+            buckets[i] = createBucket();
+        }
         return buckets;
     }
 
@@ -123,7 +127,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /** Returns the number of key-value mappings in this map. */
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return size;
     };
 
     /**
@@ -133,7 +137,9 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public void put(K key, V value) {
-        throw new UnsupportedOperationException();
+        int index = Math.floorMod(key.hashCode(), size());
+        buckets[index].add(createNode(key, value));
+        size++;
     };
 
     /** Returns a Set view of the keys contained in this map. */
