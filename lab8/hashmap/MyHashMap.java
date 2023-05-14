@@ -12,8 +12,6 @@ import java.util.Set;
  *  @author YOUR NAME HERE
  */
 public class MyHashMap<K, V> implements Map61B<K, V> {
-    private static final int initialSize = 16;
-    private static double loadFactor = 0.75;
     /**
      * Protected helper class to store key/value pairs
      * The protected qualifier allows subclass access
@@ -30,6 +28,8 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     /* Instance Variables */
     private Collection<Node>[] buckets;
+    private static final int initialSize = 16;
+    private static double loadFactor = 0.75;
     // You should probably define some more!
 
     /** Constructors */
@@ -57,7 +57,8 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * Returns a new node to be placed in a hash table bucket
      */
     private Node createNode(K key, V value) {
-        return null;
+        Node t = new Node(key, value);
+        return t;
     }
 
     /**
@@ -92,8 +93,8 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * @param tableSize the size of the table to create
      */
     private Collection<Node>[] createTable(int tableSize) {
-        Collection[] table = new Collection[tableSize];
-        return table;
+        buckets = new Collection[tableSize];
+        return buckets;
     }
 
     // TODO: Implement the methods of the Map61B Interface below
