@@ -152,6 +152,14 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     @Override
     public void put(K key, V value) {
         int index = Math.floorMod(key.hashCode(), tableSize);
+        if (containsKey(key)) {
+            for (Node n : buckets[index]) {
+                if (key.equals(n.key)) {
+                    n.value = value;
+                    return;
+                }
+            }
+        }
         buckets[index].add(createNode(key, value));
         size++;
         if (size / this.tableSize > loadFactor) {
