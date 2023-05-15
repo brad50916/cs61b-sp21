@@ -121,7 +121,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
             }
         }
         return false;
-    };
+    }
 
     /**
      * Returns the value to which the specified key is mapped, or null if this
@@ -129,14 +129,20 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public V get(K key) {
-        throw new UnsupportedOperationException();
-    };
+        int index = Math.floorMod(key.hashCode(), tableSize);
+        for (Node n : buckets[index]) {
+            if (key.equals(n.key)) {
+                return n.value;
+            }
+        }
+        return null;
+    }
 
     /** Returns the number of key-value mappings in this map. */
     @Override
     public int size() {
         return size;
-    };
+    }
 
     /**
      * Associates the specified value with the specified key in this map.
@@ -160,13 +166,13 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
                 }
             }
         }
-    };
+    }
 
     /** Returns a Set view of the keys contained in this map. */
     @Override
     public Set<K> keySet() {
         throw new UnsupportedOperationException();
-    };
+    }
 
     /**
      * Removes the mapping for the specified key from this map if present.
@@ -176,7 +182,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     @Override
     public V remove(K key) {
         throw new UnsupportedOperationException();
-    };
+    }
 
     /**
      * Removes the entry for the specified key only if it is currently mapped to
@@ -186,7 +192,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     @Override
     public V remove(K key, V value) {
         throw new UnsupportedOperationException();
-    };
+    }
 
     @Override
     public Iterator<K> iterator() {
