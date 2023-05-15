@@ -1,9 +1,6 @@
 package hashmap;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  *  A hash table-backed Map implementation. Provides amortized constant time
@@ -32,6 +29,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     private static int tableSize = 16;
     private static double loadFactor = 0.75;
     private int size = 0;
+    private Set<K> hashSet = new HashSet<>();
     // You should probably define some more!
 
     /** Constructors */
@@ -162,6 +160,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         }
         buckets[index].add(createNode(key, value));
         size++;
+        hashSet.add(key);
         if (size / this.tableSize > loadFactor) {
             int oldSize = this.tableSize;
             this.tableSize *= 2;
@@ -205,6 +204,14 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     @Override
     public Iterator<K> iterator() {
         return null;
+    }
+
+    private class MyHashMapIterator implements Iterator<K> {
+        private boolean hasNext() {
+
+        }
+
+        private
     }
 
 }
