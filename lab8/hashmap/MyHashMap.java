@@ -114,7 +114,13 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /** Returns true if this map contains a mapping for the specified key. */
     @Override
     public boolean containsKey(K key) {
-        throw new UnsupportedOperationException();
+        int index = Math.floorMod(key.hashCode(), tableSize);
+        for (Node n : buckets[index]) {
+            if (key.equals(n.key)) {
+                return true;
+            }
+        }
+        return false;
     };
 
     /**
