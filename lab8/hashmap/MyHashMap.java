@@ -29,17 +29,18 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     /* Instance Variables */
     private Collection<Node>[] buckets;
-    private static final int initialSize = 16;
+    private static int tableSize = 16;
     private static double loadFactor = 0.75;
     private int size = 0;
     // You should probably define some more!
 
     /** Constructors */
     public MyHashMap() {
-        createTable(this.initialSize);
+        createTable(this.tableSize);
     }
 
     public MyHashMap(int initialSize) {
+        tableSize = initialSize;
         createTable(initialSize);
     }
 
@@ -51,8 +52,9 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * @param maxLoad maximum load factor
      */
     public MyHashMap(int initialSize, double maxLoad) {
-        createTable(initialSize);
         loadFactor = maxLoad;
+        tableSize = initialSize;
+        createTable(initialSize);
     }
 
     /**
@@ -137,9 +139,21 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public void put(K key, V value) {
-        int index = Math.floorMod(key.hashCode(), size());
+        int index = Math.floorMod(key.hashCode(), tableSize);
         buckets[index].add(createNode(key, value));
         size++;
+        if (size / this.tableSize > loadFactor) {
+            int oldSize = this.tableSize;
+            this.tableSize *= 2;
+            Collection<Node>[] bucketsOld = buckets;
+            createTable(this.tableSize);
+            for (int i = 0; i < oldSize; i++) {
+                for (Node n : bucketsOld[i]) {
+                    int index1 = Math.floorMod(n.key.hashCode(), tableSize);
+                    buckets[index1].add(createNode(key, value));
+                }
+            }
+        }
     };
 
     /** Returns a Set view of the keys contained in this map. */
