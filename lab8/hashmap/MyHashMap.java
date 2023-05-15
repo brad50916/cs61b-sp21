@@ -203,15 +203,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public Iterator<K> iterator() {
-        return null;
-    }
-
-    private class MyHashMapIterator implements Iterator<K> {
-        private boolean hasNext() {
-
-        }
-
-        private
+        return hashSet.iterator();
     }
 
 }
