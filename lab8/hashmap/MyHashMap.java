@@ -26,10 +26,11 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     /* Instance Variables */
     private Collection<Node>[] buckets;
+    private Set<K> keySet = new HashSet<>();
+
     private static int tableSize = 16;
     private static double loadFactor = 0.75;
     private int size = 0;
-    private Set<K> hashSet = new HashSet<>();
     // You should probably define some more!
 
     /** Constructors */
@@ -106,7 +107,11 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     // Your code won't compile until you do so!
     @Override
     public void clear() {
-        throw new UnsupportedOperationException();
+        keySet = new HashSet<>();
+        tableSize = 16;
+        loadFactor = 0.75;
+        size = 0;
+        createTable(this.tableSize);
     }
 
     /** Returns true if this map contains a mapping for the specified key. */
@@ -160,7 +165,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         }
         buckets[index].add(createNode(key, value));
         size++;
-        hashSet.add(key);
+        keySet.add(key);
         if (size / this.tableSize > loadFactor) {
             int oldSize = this.tableSize;
             this.tableSize *= 2;
@@ -178,7 +183,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /** Returns a Set view of the keys contained in this map. */
     @Override
     public Set<K> keySet() {
-        return hashSet;
+        return keySet;
     }
 
     /**
@@ -203,7 +208,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public Iterator<K> iterator() {
-        return hashSet.iterator();
+        return keySet.iterator();
     }
 
 }
