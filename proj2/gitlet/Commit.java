@@ -1,8 +1,10 @@
 package gitlet;
-
+import java.util.Date;
+import java.util.Formatter;
+import java.util.HashMap;
 // TODO: any imports you need here
 
-import java.util.Date; // TODO: You'll likely use this in this class
+// TODO: You'll likely use this in this class
 
 /** Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
@@ -21,6 +23,22 @@ public class Commit {
 
     /** The message of this Commit. */
     private String message;
+    private String timestamp;
+    private String firstParent;
+    private String secondParent;
+    private HashMap<String,String> bolbs;
 
-    /* TODO: fill in the rest of this class. */
+
+    Commit (String message, String firstParent, HashMap<String,String> bolbs) {
+        this.message = message;
+        this.firstParent = firstParent;
+        this.bolbs = bolbs;
+    }
+
+    Commit (String message, String firstParent, String secondParent, HashMap<String,String> bolbs) {
+        this.message = message;
+        this.firstParent = firstParent;
+        this.secondParent = secondParent;
+        this.bolbs = bolbs;
+    }
 }
