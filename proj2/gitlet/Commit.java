@@ -1,4 +1,5 @@
 package gitlet;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.HashMap;
  *
  *  @author TODO
  */
-public class Commit {
+public class Commit implements Serializable {
     /**
      * TODO: add instance variables here.
      *

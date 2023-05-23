@@ -24,6 +24,18 @@ public class Repository {
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
+    public static final File COMMIT_DIR = join(CWD, ".gitlet", "commits");
+    public static final File BOLB_DIR = join(CWD, ".gitlet", "bolbs");
 
-    /* TODO: fill in the rest of this class. */
+    public static void setupPersistence() {
+        if (!GITLET_DIR.exists()) {
+            GITLET_DIR.mkdir();
+        }
+        if (!COMMIT_DIR.exists()) {
+            COMMIT_DIR.mkdir();
+        }
+        if (!BOLB_DIR.exists()) {
+            BOLB_DIR.mkdir();
+        }
+    }
 }

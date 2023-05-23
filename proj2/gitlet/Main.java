@@ -12,17 +12,18 @@ public class Main {
      */
     public static void main(String[] args) {
         if (args.length == 0) {
-            throw new IllegalArgumentException("Must have at least one argument");
+            throw new IllegalArgumentException("Please enter a command.");
         }
         String firstArg = args[0];
         switch(firstArg) {
             case "init":
+                Repository.setupPersistence();
                 break;
             case "add":
                 // TODO: handle the `add [filename]` command
                 break;
             default:
-                throw new IllegalArgumentException(String.format("Unknown command: %s", args[0]));
+                throw new IllegalArgumentException("No command with that name exists.");
         }
     }
 }
