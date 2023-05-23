@@ -28,6 +28,11 @@ public class Commit {
     private String secondParent;
     private HashMap<String,String> bolbs;
 
+    /** For initial commit **/
+    public Commit (String message, String timestamp) {
+        this.message = message;
+        this.timestamp = timestamp;
+    }
 
     public Commit (String message, String firstParent, HashMap<String,String> bolbs) {
         this.message = message;
