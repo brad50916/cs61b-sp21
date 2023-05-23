@@ -29,13 +29,13 @@ public class Commit {
     private HashMap<String,String> bolbs;
 
 
-    Commit (String message, String firstParent, HashMap<String,String> bolbs) {
+    public Commit (String message, String firstParent, HashMap<String,String> bolbs) {
         this.message = message;
         this.firstParent = firstParent;
         this.bolbs = bolbs;
     }
 
-    Commit (String message, String firstParent, String secondParent, HashMap<String,String> bolbs) {
+    public Commit (String message, String firstParent, String secondParent, HashMap<String,String> bolbs) {
         this.message = message;
         this.firstParent = firstParent;
         this.secondParent = secondParent;
