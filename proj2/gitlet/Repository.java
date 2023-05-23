@@ -1,6 +1,9 @@
 package gitlet;
 
 import java.io.File;
+import java.util.Date;
+import java.util.Formatter;
+
 import static gitlet.Utils.*;
 
 // TODO: any imports you need here
@@ -37,5 +40,14 @@ public class Repository {
         if (!BOLB_DIR.exists()) {
             BOLB_DIR.mkdir();
         }
+    }
+
+    public static void initialCommit() {
+        Date currentDate = new Date(0);
+        Formatter formatter = new Formatter();
+        String timestamp = formatter.format("%tF %tT", currentDate, currentDate).toString();
+        formatter.close();
+        System.out.println(timestamp);
+        Commit initialCommit = new Commit("initial commit", timestamp);
     }
 }

@@ -2,6 +2,8 @@ package gitlet;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Formatter;
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author TODO
  */
@@ -18,6 +20,7 @@ public class Main {
         switch(firstArg) {
             case "init":
                 Repository.setupPersistence();
+                Repository.initialCommit();
                 break;
             case "add":
                 // TODO: handle the `add [filename]` command

@@ -47,4 +47,20 @@ public class Commit implements Serializable {
         this.secondParent = secondParent;
         this.bolbs = bolbs;
     }
+
+    public String getMessage() {
+        return message;
+    }
+    public String getTimestamp() {
+        return timestamp;
+    }
+    public String getFirstParent() {
+        return firstParent;
+    }
+    public String getSecondParent() {
+        return secondParent;
+    }
+    public HashMap<String,String> getBolbs() {
+        return bolbs;
+    }
 }
