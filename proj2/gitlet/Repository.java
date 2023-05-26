@@ -35,6 +35,7 @@ public class Repository {
     public static final File COMMIT_DIR = join(CWD, ".gitlet", "commits");
     public static final File BOLB_DIR = join(CWD, ".gitlet", "bolbs");
     public static final File TREE_DIR = join(CWD,".gitlet", "tree");
+    public static Tree root;
 
     public static void setupPersistence() {
         if (!GITLET_DIR.exists()) {
@@ -57,8 +58,10 @@ public class Repository {
         String timestamp = formatter.format("%tF %tT", currentDate, currentDate).toString();
         formatter.close();
         Commit firstCommit = new Commit("initial commit", timestamp);
-        getSHA1(firstCommit);
-//        Tree root = new Tree(firatCommit);
+        String s = getSHA1(firstCommit);
+        root = new Tree();
+        root.put(s);
+        writeObject(TREE_DIR, root);
     }
     public static String getSHA1(Object instance) {
         try {
@@ -79,7 +82,7 @@ public class Repository {
             }
 
             String sha1HashString = hexString.toString();
-            System.out.println("SHA-1 hash: " + sha1HashString);
+//            System.out.println("SHA-1 hash: " + sha1HashString);
             return sha1HashString;
 
         } catch (IOException e) {
