@@ -1,13 +1,10 @@
 package gitlet;
-import java.io.File;
-import java.io.Serializable;
+import javax.swing.tree.TreeNode;
+import java.io.*;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.ArrayList;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -34,7 +31,8 @@ public class Repository {
     public static final File GITLET_DIR = join(CWD, ".gitlet");
     public static final File COMMIT_DIR = join(CWD, ".gitlet", "commits");
     public static final File BOLB_DIR = join(CWD, ".gitlet", "bolbs");
-    public static final File TREE_DIR = join(CWD,".gitlet", "tree");
+    public static final File TREE_PATH = join(CWD,".gitlet", "tree");
+
     public static Tree root;
 
     public static void setupPersistence() {
@@ -47,21 +45,32 @@ public class Repository {
         if (!BOLB_DIR.exists()) {
             BOLB_DIR.mkdir();
         }
-        if (!TREE_DIR.exists()) {
-            TREE_DIR.mkdir();
+    }
+    public static void log() {
+        if (TREE_PATH.exists()) {
+            Tree temp = readObject(TREE_PATH, Tree.class);
+            System.out.println(temp.getRoot().getCommit());
         }
     }
-
     public static void initialCommit() {
+        if (TREE_PATH.exists()) {
+            System.out.println("A Gitlet version-control system already exists in the current directory.");
+            return;
+        } else {
+            root = new Tree();
+            writeObject(TREE_PATH, root);
+        }
         Date currentDate = new Date(0);
         Formatter formatter = new Formatter();
         String timestamp = formatter.format("%tF %tT", currentDate, currentDate).toString();
         formatter.close();
         Commit firstCommit = new Commit("initial commit", timestamp);
         String s = getSHA1(firstCommit);
-        root = new Tree();
+        System.out.println(s);
+        File outFile = Utils.join(COMMIT_DIR, s);
+        writeObject(outFile, firstCommit);
         root.put(s);
-        writeObject(TREE_DIR, root);
+        writeObject(TREE_PATH, root);
     }
     public static String getSHA1(Object instance) {
         try {
@@ -82,7 +91,6 @@ public class Repository {
             }
 
             String sha1HashString = hexString.toString();
-//            System.out.println("SHA-1 hash: " + sha1HashString);
             return sha1HashString;
 
         } catch (IOException e) {

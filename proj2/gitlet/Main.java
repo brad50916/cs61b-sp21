@@ -25,6 +25,9 @@ public class Main {
             case "add":
                 // TODO: handle the `add [filename]` command
                 break;
+            case "log":
+                Repository.log();
+                break;
             default:
                 throw new IllegalArgumentException("No command with that name exists.");
         }
