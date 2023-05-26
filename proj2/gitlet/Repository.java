@@ -47,9 +47,17 @@ public class Repository {
         }
     }
     public static void log() {
-        if (TREE_PATH.exists()) {
-            Tree temp = readObject(TREE_PATH, Tree.class);
-            System.out.println(temp.getRoot().getCommit());
+        if (!TREE_PATH.exists()) {
+            return;
+        }
+        Tree temp = readObject(TREE_PATH, Tree.class);
+        String sha = temp.getRoot().getCommit();
+        System.out.println(sha);
+        File inFile = Utils.join(COMMIT_DIR, sha);
+        if (inFile.exists()) {
+            Commit c = readObject(inFile, Commit.class);
+            System.out.println(c.getMessage());
+            System.out.println(c.getTimestamp());
         }
     }
     public static void initialCommit() {
