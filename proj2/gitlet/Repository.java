@@ -39,6 +39,7 @@ public class Repository {
     public static StagingArea stage;
 
     public static boolean setupPersistence() {
+        /** if file has been set up before, print error message and return */
         if (GITLET_DIR.exists() && COMMIT_DIR.exists() && BOLB_DIR.exists() && TREE_PATH.exists()) {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
             return false;
@@ -65,6 +66,7 @@ public class Repository {
             System.out.println(c.getTimestamp());
         }
     }
+    /** Add file to staging area */
     public static void addFile(String fileName) {
         /** Find file's path */
         File f = Utils.join(CWD, fileName);
@@ -112,6 +114,7 @@ public class Repository {
         stage.putBlob(fileName, s);
         writeObject(STAGE_PATH, stage);
     }
+    /** Initialize gitlet */
     public static void initialCommit() {
         /** Setup Persistence, if have been set up, just return */
         if (setupPersistence() == false) return;
