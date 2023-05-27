@@ -113,18 +113,30 @@ public class Repository {
         writeObject(STAGE_PATH, stage);
     }
     public static void initialCommit() {
+        /** Setup Persistence, if have been set up, just return */
         if (setupPersistence() == false) return;
+
+        /** Create instance variable of tree and stage*/
         root = new Tree();
         stage = new StagingArea();
+
+        /**  Generate The (Unix) Epoch time for initial commit timestamp */
         Date currentDate = new Date(0);
         Formatter formatter = new Formatter();
         String timestamp = formatter.format("%tF %tT", currentDate, currentDate).toString();
         formatter.close();
+
+        /** Add initial commit */
         Commit firstCommit = new Commit("initial commit", timestamp);
+
+        /** Get first commit SHA */
         String s = getSHA1fromclass(firstCommit);
-//        System.out.println(s);
+
+        /** Write commit */
         File outFile = Utils.join(COMMIT_DIR, s);
         writeObject(outFile, firstCommit);
+
+        /** Write tree and stage */
         root.put(s);
         writeObject(TREE_PATH, root);
         writeObject(STAGE_PATH, stage);
