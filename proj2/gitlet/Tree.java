@@ -8,6 +8,7 @@ import java.util.Map;
 public class Tree implements Serializable {
     private TreeNode root;
     private TreeNode master;
+    private int size = 0;
     public Tree() {
         this.root = null;
         this.master = null;
@@ -22,7 +23,7 @@ public class Tree implements Serializable {
         public Map<String, TreeNode> getChildren() {
             return children;
         }
-        public String getCommit() {
+        public String getCommitSHA() {
             return commitSHA;
         }
     }
@@ -35,11 +36,15 @@ public class Tree implements Serializable {
             this.master.getChildren().put(commit, temp);
             this.master = master.getChildren().get(commit);
         }
+        size++;
     }
     public TreeNode getRoot() {
         return root;
     }
     public TreeNode getMaster() {
         return master;
+    }
+    public int getSize() {
+        return size;
     }
 }

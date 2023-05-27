@@ -19,17 +19,25 @@ public class Main {
         String firstArg = args[0];
         switch(firstArg) {
             case "init":
-                Repository.setupPersistence();
+                validateNumArgs("init", args, 1);
                 Repository.initialCommit();
                 break;
             case "add":
                 // TODO: handle the `add [filename]` command
+                validateNumArgs("add", args, 2);
+                Repository.addFile(args[1]);
                 break;
             case "log":
                 Repository.log();
                 break;
             default:
                 throw new IllegalArgumentException("No command with that name exists.");
+        }
+    }
+    public static void validateNumArgs(String cmd, String[] args, int n) {
+        if (args.length != n) {
+            throw new RuntimeException(
+                    String.format("Invalid number of arguments for: %s.", cmd));
         }
     }
 }
