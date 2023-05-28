@@ -52,10 +52,14 @@ public class Repository {
         }
         return true;
     }
+    /** Print log history for head commit */
     public static void log() {
+        /** Get tree */
         Tree temp = readObject(TREE_PATH, Tree.class);
+        /** Get Head commit */
         String sha = temp.getHead().getCommitSHA();
         File inFile = Utils.join(COMMIT_DIR, sha);
+        /** Get head's parent commit if it has parent */
         while(true) {
             Commit c = readObject(inFile, Commit.class);
             System.out.println(c.getMessage());
