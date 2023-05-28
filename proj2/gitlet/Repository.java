@@ -98,9 +98,6 @@ public class Repository {
             /** Check the corresponding SHA is equal or not compared to previous commit
              *  If is equal, remove the file from the stage.
              */
-
-            System.out.println(h.containsKey(fileName));
-
             if (h.containsKey(fileName) && s.equals(h.get(fileName))) {
                 System.out.println("there is no change to the file compared to previous commit");
                 StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
@@ -125,29 +122,45 @@ public class Repository {
         stage.putBlob(fileName, s);
         writeObject(STAGE_PATH, stage);
     }
+    /** Creating commit */
     public static void Commit(String message) {
+        /** Get staging area */
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
+        /** Get staging area Blobs HashMap */
         HashMap<String,String> stageBlobs = stage.getBlobs();
+        /** Get its remove Blobs HashSet */
         HashSet<String> rmBolbs = stage.getRmBolbsBlobs();
 
+        /** Get tree */
         Tree temp = readObject(TREE_PATH, Tree.class);
+        /** Get tree Head commit SHA */
         String sha = temp.getHead().getCommitSHA();
+        /** Using SHA to get the commit file */
         File inFile = Utils.join(COMMIT_DIR, sha);
         Commit c = readObject(inFile, Commit.class);
+        /** Get Head commit Blobs HashMap */
         HashMap<String,String> previousBolbs = c.getBolbs();
 
+        /** Creating new Blobs HashMap */
         HashMap<String,String> curBolbs = new HashMap<>();
 
+        /** Iterate through the Head commit Blobs HashMap,
+         *  add files to new Blobs HashMap except for those in remove Blobs HashSet
+         */
         for (String Key: previousBolbs.keySet()){
             if (!rmBolbs.contains(Key)) {
                 curBolbs.put(Key,previousBolbs.get(Key));
             }
         }
+        /** Iterate through the staging area Blobs HashMap,
+         *  add files to new Blobs HashMap except for those in remove Blobs HashSet
+         */
         for (String Key: stageBlobs.keySet()) {
             if (!rmBolbs.contains(Key)) {
                 curBolbs.put(Key, stageBlobs.get(Key));
             }
         }
+        /** Creating commit */
         Commit newCommit = new Commit(message, sha, curBolbs);
         String s = getSHA1fromclass(newCommit);
 
