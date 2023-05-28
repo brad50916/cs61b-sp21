@@ -54,13 +54,16 @@ public class Repository {
     }
     public static void log() {
         Tree temp = readObject(TREE_PATH, Tree.class);
-        String sha = temp.getRoot().getCommitSHA();
-        System.out.println(sha);
+        String sha = temp.getHead().getCommitSHA();
         File inFile = Utils.join(COMMIT_DIR, sha);
-        if (inFile.exists()) {
+        while(true) {
             Commit c = readObject(inFile, Commit.class);
             System.out.println(c.getMessage());
-            System.out.println(c.getTimestamp());
+            if (c.getFirstParent() != null) {
+                inFile = Utils.join(COMMIT_DIR, c.getFirstParent());
+            } else {
+                break;
+            }
         }
     }
     /** Add file to staging area */
@@ -128,6 +131,7 @@ public class Repository {
         HashMap<String,String> previousBolbs = c.getBolbs();
 
         HashMap<String,String> curBolbs = new HashMap<>();
+
         for (String Key: previousBolbs.keySet()){
             if (!rmBolbs.contains(Key)) {
                 curBolbs.put(Key,previousBolbs.get(Key));
