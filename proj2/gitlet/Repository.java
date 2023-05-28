@@ -87,7 +87,6 @@ public class Repository {
 
         /** If main not equal to root, find whether the file has been changed */
         if (temp.getSize() != 1) {
-
             /** Get master commit */
             String sha = temp.getHead().getCommitSHA();
             File inFile = Utils.join(COMMIT_DIR, sha);
@@ -99,12 +98,18 @@ public class Repository {
             /** Check the corresponding SHA is equal or not compared to previous commit
              *  If is equal, remove the file from the stage.
              */
+
+            System.out.println(h.containsKey(fileName));
+
             if (h.containsKey(fileName) && s.equals(h.get(fileName))) {
                 System.out.println("there is no change to the file compared to previous commit");
                 StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
-                stage.removeBlob(fileName);
-                writeObject(STAGE_PATH, stage);
-                return;
+                if (stage.getBlobs().containsKey(fileName)) {
+                    System.out.println("Remove the file from commit");
+                    stage.removeBlob(fileName);
+                    writeObject(STAGE_PATH, stage);
+                    return;
+                }
             }
         }
         /** Find whether the file has been changed to previously add version */
@@ -143,7 +148,6 @@ public class Repository {
                 curBolbs.put(Key, stageBlobs.get(Key));
             }
         }
-
         Commit newCommit = new Commit(message, sha, curBolbs);
         String s = getSHA1fromclass(newCommit);
 

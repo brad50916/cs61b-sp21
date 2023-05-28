@@ -52,7 +52,6 @@ public class Commit implements Serializable {
         String timestamp1 = formatter.format("%tF %tT", currentDate, currentDate).toString();
         formatter.close();
         this.timestamp = timestamp1;
-        this.bolbs = new HashMap<>();
     }
 
     public Commit (String message, String firstParent, String secondParent, HashMap<String,String> bolbs) {
@@ -65,7 +64,6 @@ public class Commit implements Serializable {
         String timestamp1 = formatter.format("%tF %tT", currentDate, currentDate).toString();
         formatter.close();
         this.timestamp = timestamp1;
-        this.bolbs = new HashMap<>();
     }
 
     public String getMessage() {
