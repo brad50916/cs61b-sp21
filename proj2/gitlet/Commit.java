@@ -32,9 +32,14 @@ public class Commit implements Serializable {
     private HashMap<String,String> bolbs;
 
     /** For initial commit **/
-    public Commit (String message, String timestamp) {
+    public Commit (String message) {
         this.message = message;
-        this.timestamp = timestamp;
+        /**  Generate The (Unix) Epoch time for initial commit timestamp */
+        Date currentDate = new Date(0);
+        Formatter formatter = new Formatter();
+        String timestamp1 = formatter.format("%tF %tT", currentDate, currentDate).toString();
+        formatter.close();
+        this.timestamp = timestamp1;
         this.bolbs = new HashMap<>();
     }
 
@@ -42,11 +47,11 @@ public class Commit implements Serializable {
         this.message = message;
         this.firstParent = firstParent;
         this.bolbs = bolbs;
-        Date currentDate = new Date(0);
+        Date currentDate = new Date();
         Formatter formatter = new Formatter();
-        String timestamp = formatter.format("%tF %tT", currentDate, currentDate).toString();
+        String timestamp1 = formatter.format("%tF %tT", currentDate, currentDate).toString();
         formatter.close();
-        this.timestamp = timestamp;
+        this.timestamp = timestamp1;
         this.bolbs = new HashMap<>();
     }
 
@@ -55,11 +60,11 @@ public class Commit implements Serializable {
         this.firstParent = firstParent;
         this.secondParent = secondParent;
         this.bolbs = bolbs;
-        Date currentDate = new Date(0);
+        Date currentDate = new Date();
         Formatter formatter = new Formatter();
-        String timestamp = formatter.format("%tF %tT", currentDate, currentDate).toString();
+        String timestamp1 = formatter.format("%tF %tT", currentDate, currentDate).toString();
         formatter.close();
-        this.timestamp = timestamp;
+        this.timestamp = timestamp1;
         this.bolbs = new HashMap<>();
     }
 

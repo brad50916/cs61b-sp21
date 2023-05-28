@@ -59,6 +59,7 @@ public class Repository {
         while(true) {
             Commit c = readObject(inFile, Commit.class);
             System.out.println(c.getMessage());
+            System.out.println(c.getTimestamp());
             if (c.getFirstParent() != null) {
                 inFile = Utils.join(COMMIT_DIR, c.getFirstParent());
             } else {
@@ -165,14 +166,8 @@ public class Repository {
         Tree root = new Tree();
         StagingArea stage = new StagingArea();
 
-        /**  Generate The (Unix) Epoch time for initial commit timestamp */
-        Date currentDate = new Date(0);
-        Formatter formatter = new Formatter();
-        String timestamp = formatter.format("%tF %tT", currentDate, currentDate).toString();
-        formatter.close();
-
         /** Add initial commit */
-        Commit firstCommit = new Commit("initial commit", timestamp);
+        Commit firstCommit = new Commit("initial commit");
 
         /** Get first commit SHA */
         String s = getSHA1fromclass(firstCommit);
