@@ -24,4 +24,7 @@ public class StagingArea implements Serializable {
     public void removeBlob(String path) {
         blobs.remove(path);
     }
+    public HashSet<String> getRmBolbsBlobs() {
+        return rmBolbs;
+    }
 }

@@ -17,6 +17,7 @@ public class Tree implements Serializable {
     }
     public class TreeNode implements Serializable{
         private String commitSHA;
+        /** map key is SHA, value is child commit */
         private Map<String, TreeNode> children;
         public TreeNode(String commit) {
             this.commitSHA = commit;

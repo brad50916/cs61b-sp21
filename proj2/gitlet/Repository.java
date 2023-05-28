@@ -7,6 +7,7 @@ import java.util.Formatter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import static gitlet.Utils.*;
 
@@ -33,10 +34,6 @@ public class Repository {
     public static final File BOLB_DIR = join(CWD, ".gitlet", "bolbs");
     public static final File TREE_PATH = join(CWD,".gitlet", "tree");
     public static final File STAGE_PATH = join(CWD,".gitlet", "stage");
-
-
-    public static Tree root;
-    public static StagingArea stage;
 
     public static boolean setupPersistence() {
         /** if file has been set up before, print error message and return */
@@ -120,7 +117,40 @@ public class Repository {
         writeObject(STAGE_PATH, stage);
     }
     public static void Commit(String message) {
+        StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
+        HashMap<String,String> stageBlobs = stage.getBlobs();
+        HashSet<String> rmBolbs = stage.getRmBolbsBlobs();
 
+        Tree temp = readObject(TREE_PATH, Tree.class);
+        String sha = temp.getHead().getCommitSHA();
+        File inFile = Utils.join(COMMIT_DIR, sha);
+        Commit c = readObject(inFile, Commit.class);
+        HashMap<String,String> previousBolbs = c.getBolbs();
+
+        HashMap<String,String> curBolbs = new HashMap<>();
+        for (String Key: previousBolbs.keySet()){
+            if (!rmBolbs.contains(Key)) {
+                curBolbs.put(Key,previousBolbs.get(Key));
+            }
+        }
+        for (String Key: stageBlobs.keySet()) {
+            if (!rmBolbs.contains(Key)) {
+                curBolbs.put(Key, stageBlobs.get(Key));
+            }
+        }
+
+        Commit newCommit = new Commit(message, sha, curBolbs);
+        String s = getSHA1fromclass(newCommit);
+
+        /** Write commit */
+        File outFile = Utils.join(COMMIT_DIR, s);
+        writeObject(outFile, newCommit);
+
+        /** Write tree and stage */
+        temp.put(s);
+        writeObject(TREE_PATH, temp);
+        stage = new StagingArea();
+        writeObject(STAGE_PATH, stage);
     }
     /** Initialize gitlet */
     public static void initialCommit() {
@@ -128,8 +158,8 @@ public class Repository {
         if (setupPersistence() == false) return;
 
         /** Create instance variable of tree and stage*/
-        root = new Tree();
-        stage = new StagingArea();
+        Tree root = new Tree();
+        StagingArea stage = new StagingArea();
 
         /**  Generate The (Unix) Epoch time for initial commit timestamp */
         Date currentDate = new Date(0);

@@ -25,8 +25,10 @@ public class Commit implements Serializable {
     /** The message of this Commit. */
     private String message;
     private String timestamp;
+    /** parent commit SHA */
     private String firstParent;
     private String secondParent;
+    /** hashmap key is relative file path, value is its SHA */
     private HashMap<String,String> bolbs;
 
     /** For initial commit **/
@@ -39,6 +41,11 @@ public class Commit implements Serializable {
         this.message = message;
         this.firstParent = firstParent;
         this.bolbs = bolbs;
+        Date currentDate = new Date(0);
+        Formatter formatter = new Formatter();
+        String timestamp = formatter.format("%tF %tT", currentDate, currentDate).toString();
+        formatter.close();
+        this.timestamp = timestamp;
     }
 
     public Commit (String message, String firstParent, String secondParent, HashMap<String,String> bolbs) {
@@ -46,6 +53,11 @@ public class Commit implements Serializable {
         this.firstParent = firstParent;
         this.secondParent = secondParent;
         this.bolbs = bolbs;
+        Date currentDate = new Date(0);
+        Formatter formatter = new Formatter();
+        String timestamp = formatter.format("%tF %tT", currentDate, currentDate).toString();
+        formatter.close();
+        this.timestamp = timestamp;
     }
 
     public String getMessage() {
