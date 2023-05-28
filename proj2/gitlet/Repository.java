@@ -60,12 +60,17 @@ public class Repository {
         String sha = temp.getHead().getCommitSHA();
         File inFile = Utils.join(COMMIT_DIR, sha);
         /** Get head's parent commit if it has parent */
+        String curSHA = sha;
         while(true) {
             Commit c = readObject(inFile, Commit.class);
+            System.out.println("===");
+            System.out.println("commit " + curSHA);
+            System.out.println("Date: " + c.getTimestamp());
             System.out.println(c.getMessage());
-            System.out.println(c.getTimestamp());
+            System.out.println();
             if (c.getFirstParent() != null) {
                 inFile = Utils.join(COMMIT_DIR, c.getFirstParent());
+                curSHA = c.getFirstParent();
             } else {
                 break;
             }
