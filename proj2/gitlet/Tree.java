@@ -53,6 +53,9 @@ public class Tree implements Serializable {
     public TreeNode getMaster() {
         return master;
     }
+    public TreeNode getHead() {
+        return head;
+    }
     public int getSize() {
         return size;
     }

@@ -88,16 +88,21 @@ public class Repository {
         if (temp.getSize() != 1) {
 
             /** Get master commit */
-            String sha = temp.getMaster().getCommitSHA();
+            String sha = temp.getHead().getCommitSHA();
             File inFile = Utils.join(COMMIT_DIR, sha);
             Commit c = readObject(inFile, Commit.class);
 
             /** Get the commits blobs */
             HashMap<String,String> h = c.getBolbs();
 
-            /** Check the corresponding SHA is equal or not */
+            /** Check the corresponding SHA is equal or not compared to previous commit
+             *  If is equal, remove the file from the stage.
+             */
             if (h.containsKey(fileName) && s.equals(h.get(fileName))) {
                 System.out.println("there is no change to the file compared to previous commit");
+                StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
+                stage.removeBlob(fileName);
+                writeObject(STAGE_PATH, stage);
                 return;
             }
         }

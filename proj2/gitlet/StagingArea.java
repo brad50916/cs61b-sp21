@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class StagingArea implements Serializable {
     /**
@@ -9,8 +10,10 @@ public class StagingArea implements Serializable {
      * Key is relative file path, value is its SHA
      */
     private HashMap<String,String> blobs;
+    private HashSet<String> rmBolbs;
     public StagingArea() {
         blobs = new HashMap<>();
+        rmBolbs = new HashSet<>();
     }
     public HashMap<String,String> getBlobs() {
         return blobs;
