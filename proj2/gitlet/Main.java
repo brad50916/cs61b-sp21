@@ -27,6 +27,10 @@ public class Main {
                 validateNumArgs("add", args, 2);
                 Repository.addFile(args[1]);
                 break;
+            case "commit":
+                validateNumArgs("commit", args, 2);
+                Repository.Commit(args[1]);
+                break;
             case "log":
                 Repository.log();
                 break;

@@ -114,6 +114,9 @@ public class Repository {
         stage.putBlob(fileName, s);
         writeObject(STAGE_PATH, stage);
     }
+    public static void Commit(String message) {
+
+    }
     /** Initialize gitlet */
     public static void initialCommit() {
         /** Setup Persistence, if have been set up, just return */
