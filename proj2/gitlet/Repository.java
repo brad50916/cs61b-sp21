@@ -188,6 +188,14 @@ public class Repository {
                 curBolbs.put(Key, stageBlobs.get(Key));
             }
         }
+        /** Creating Blobs */
+        for (String Key: curBolbs.keySet()) {
+            File f = Utils.join(CWD, Key);
+            String filetoString = readContentsAsString(f);
+            File outFile = Utils.join(BOLB_DIR, curBolbs.get(Key));
+            writeContents(outFile, filetoString);
+        }
+
         /** Creating commit */
         Commit newCommit = new Commit(message, sha, curBolbs);
         String s = sha1(getClassBytes(newCommit));
