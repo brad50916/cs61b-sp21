@@ -78,7 +78,7 @@ public class Commit implements Serializable {
     public String getSecondParent() {
         return secondParent;
     }
-    public HashMap<String,String> getBolbs() {
+    public HashMap<String,String> getBlobs() {
         return bolbs;
     }
 }

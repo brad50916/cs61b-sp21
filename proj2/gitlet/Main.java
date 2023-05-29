@@ -31,6 +31,10 @@ public class Main {
                 validateNumArgs("commit", args, 2);
                 Repository.Commit(args[1]);
                 break;
+            case "rm":
+                validateNumArgs("commit", args, 2);
+                Repository.Rm(args[1]);
+                break;
             case "log":
                 Repository.log();
                 break;
@@ -40,6 +44,10 @@ public class Main {
     }
     public static void validateNumArgs(String cmd, String[] args, int n) {
         if (args.length != n) {
+            if (cmd.equals("commit")) {
+                System.out.println("Please enter a commit message.");
+                System.exit(0);
+            }
             throw new RuntimeException(
                     String.format("Invalid number of arguments for: %s.", cmd));
         }

@@ -89,7 +89,14 @@ public class Repository {
 
         /** Get file's SHA */
         String path = f.getPath();
-        String s = getSHA1frompath(path);
+        String s = "";
+        try {
+            byte[] fileContent = Files.readAllBytes(Paths.get(path));
+            s = sha1(fileContent);
+
+        } catch (IOException e) {
+            System.out.println("Error reading the file: " + e.getMessage());
+        }
 
         /** Load tree */
         Tree temp = readObject(TREE_PATH, Tree.class);
@@ -102,7 +109,7 @@ public class Repository {
             Commit c = readObject(inFile, Commit.class);
 
             /** Get the commits blobs */
-            HashMap<String,String> h = c.getBolbs();
+            HashMap<String,String> h = c.getBlobs();
 
             /** Check the corresponding SHA is equal or not compared to previous commit
              *  If is equal, remove the file from the stage.
@@ -137,11 +144,9 @@ public class Repository {
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
         /** Get staging area Blobs HashMap */
         HashMap<String,String> stageBlobs = stage.getBlobs();
-        /** Get its remove Blobs HashSet */
-        HashSet<String> rmBolbs = stage.getRmBolbsBlobs();
         /** If there is no file in stage area, return */
-        if (stageBlobs.size() == 0 && rmBolbs.size() == 0) {
-            System.out.println("nothing to commit, working tree clean");
+        if (stageBlobs.size() == 0) {
+            System.out.println("No changes added to the commit.");
             return;
         }
 
@@ -153,7 +158,7 @@ public class Repository {
         File inFile = Utils.join(COMMIT_DIR, sha);
         Commit c = readObject(inFile, Commit.class);
         /** Get Head commit Blobs HashMap */
-        HashMap<String,String> previousBolbs = c.getBolbs();
+        HashMap<String,String> previousBolbs = c.getBlobs();
 
         /** Creating new Blobs HashMap */
         HashMap<String,String> curBolbs = new HashMap<>();
@@ -162,21 +167,18 @@ public class Repository {
          *  add files to new Blobs HashMap except for those in remove Blobs HashSet
          */
         for (String Key: previousBolbs.keySet()){
-            if (!rmBolbs.contains(Key)) {
-                curBolbs.put(Key,previousBolbs.get(Key));
-            }
+            curBolbs.put(Key,previousBolbs.get(Key));
         }
         /** Iterate through the staging area Blobs HashMap,
          *  add files to new Blobs HashMap except for those in remove Blobs HashSet
          */
         for (String Key: stageBlobs.keySet()) {
-            if (!rmBolbs.contains(Key)) {
-                curBolbs.put(Key, stageBlobs.get(Key));
-            }
+            curBolbs.put(Key, stageBlobs.get(Key));
         }
         /** Creating commit */
         Commit newCommit = new Commit(message, sha, curBolbs);
-        String s = getSHA1fromclass(newCommit);
+        String classtoString = newCommit.toString();
+        String s = sha1(classtoString);
 
         /** Write commit */
         File outFile = Utils.join(COMMIT_DIR, s);
@@ -187,6 +189,26 @@ public class Repository {
         writeObject(TREE_PATH, temp);
         stage = new StagingArea();
         writeObject(STAGE_PATH, stage);
+    }
+    public static void Rm(String message) {
+        /** Get staging area */
+        StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
+        /** Get staging area Blobs HashMap */
+        HashMap<String,String> stageBlobs = stage.getBlobs();
+//        if (blobs.containsKey(fileName) && s.equals(blobs.get(fileName))) {
+//            System.out.println("there is no change to the file compared to previous add version");
+//            return;
+//        }
+
+        /** Get tree */
+        Tree temp = readObject(TREE_PATH, Tree.class);
+        /** Get tree Head commit SHA */
+        String sha = temp.getHead().getCommitSHA();
+        /** Using SHA to get the commit file */
+        File inFile = Utils.join(COMMIT_DIR, sha);
+        Commit c = readObject(inFile, Commit.class);
+        /** Get Head commit Blobs HashMap */
+        HashMap<String,String> headBlobs = c.getBlobs();
     }
     /** Initialize gitlet */
     public static void initialCommit() {
@@ -199,9 +221,9 @@ public class Repository {
 
         /** Add initial commit */
         Commit firstCommit = new Commit("initial commit");
-
+        String classtoString = firstCommit.toString();
         /** Get first commit SHA */
-        String s = getSHA1fromclass(firstCommit);
+        String s = sha1(classtoString);
 
         /** Write commit */
         File outFile = Utils.join(COMMIT_DIR, s);
@@ -211,76 +233,5 @@ public class Repository {
         root.put(s);
         writeObject(TREE_PATH, root);
         writeObject(STAGE_PATH, stage);
-    }
-    public static String getSHA1frompath(String filePath) {
-        try {
-            // Read the file content into a byte array
-            byte[] fileContent = Files.readAllBytes(Paths.get(filePath));
-
-            // Create a MessageDigest instance with SHA-1 algorithm
-            MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-
-            // Calculate the SHA-1 hash from the file content
-            byte[] sha1Hash = sha1.digest(fileContent);
-
-            // Convert the hash bytes to a hexadecimal string representation
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : sha1Hash) {
-                String hex = Integer.toHexString(0xFF & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-
-            String sha1HashString = hexString.toString();
-            return sha1HashString;
-
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println("SHA-1 algorithm not available.");
-        } catch (IOException e) {
-            System.out.println("Error reading the file: " + e.getMessage());
-        }
-        return null;
-    }
-    public static String getSHA1fromclass(Object instance) {
-        try {
-            // Convert the instance to a byte array
-            byte[] objectBytes = convertToBytes(instance);
-
-            // Calculate the SHA-1 hash from the byte array
-            byte[] sha1Hash = calculateSHA1Hash(objectBytes);
-
-            // Convert the hash bytes to a hexadecimal string representation
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : sha1Hash) {
-                String hex = Integer.toHexString(0xFF & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-
-            String sha1HashString = hexString.toString();
-            return sha1HashString;
-
-        } catch (IOException e) {
-            System.out.println("Error converting object to byte array: " + e.getMessage());
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println("SHA-1 algorithm not available.");
-        }
-        return null;
-    }
-    private static byte[] convertToBytes(Object obj) throws IOException {
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);
-        objectStream.writeObject(obj);
-        objectStream.close();
-        return byteStream.toByteArray();
-    }
-
-    private static byte[] calculateSHA1Hash(byte[] data) throws NoSuchAlgorithmException {
-        MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-        return sha1.digest(data);
     }
 }
