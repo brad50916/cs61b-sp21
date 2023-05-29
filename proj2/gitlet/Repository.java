@@ -139,6 +139,11 @@ public class Repository {
         HashMap<String,String> stageBlobs = stage.getBlobs();
         /** Get its remove Blobs HashSet */
         HashSet<String> rmBolbs = stage.getRmBolbsBlobs();
+        /** If there is no file in stage area, return */
+        if (stageBlobs.size() == 0 && rmBolbs.size() == 0) {
+            System.out.println("nothing to commit, working tree clean");
+            return;
+        }
 
         /** Get tree */
         Tree temp = readObject(TREE_PATH, Tree.class);
