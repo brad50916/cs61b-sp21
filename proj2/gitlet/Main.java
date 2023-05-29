@@ -38,6 +38,9 @@ public class Main {
             case "log":
                 Repository.log();
                 break;
+            case "global-log":
+                Repository.globalLog();
+                break;
             default:
                 throw new IllegalArgumentException("No command with that name exists.");
         }

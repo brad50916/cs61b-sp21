@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import static gitlet.Utils.*;
 
@@ -70,6 +71,18 @@ public class Repository {
             } else {
                 break;
             }
+        }
+    }
+    public static void globalLog() {
+        List<String> allCommits = plainFilenamesIn(COMMIT_DIR);
+        for (String s : allCommits) {
+            File inFile = Utils.join(COMMIT_DIR, s);
+            Commit c = readObject(inFile, Commit.class);
+            System.out.println("===");
+            System.out.println("commit " + s);
+            System.out.println("Date: " + c.getTimestamp());
+            System.out.println(c.getMessage());
+            System.out.println();
         }
     }
     private static String getSHAfromfile(String fileName) {
