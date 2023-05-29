@@ -154,7 +154,7 @@ public class Repository {
         HashMap<String,String> stageBlobs = stage.getBlobs();
         HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
         /** If there is no file in stage area, return */
-        if (stageBlobs.size() == 0) {
+        if (stageBlobs.size() == 0 && rmBlobs.size() == 0) {
             System.out.println("No changes added to the commit.");
             return;
         }
@@ -177,7 +177,7 @@ public class Repository {
          */
         for (String Key: previousBolbs.keySet()){
             if (!rmBlobs.contains(Key)){
-                curBolbs.put(Key,previousBolbs.get(Key));
+                curBolbs.put(Key, previousBolbs.get(Key));
             }
         }
         /** Iterate through the staging area Blobs HashMap,
@@ -190,8 +190,7 @@ public class Repository {
         }
         /** Creating commit */
         Commit newCommit = new Commit(message, sha, curBolbs);
-        String classtoString = newCommit.toString();
-        String s = sha1(classtoString);
+        String s = sha1(getClassBytes(newCommit));
 
         /** Write commit */
         File outFile = Utils.join(COMMIT_DIR, s);
@@ -250,9 +249,8 @@ public class Repository {
 
         /** Add initial commit */
         Commit firstCommit = new Commit("initial commit");
-        String classtoString = firstCommit.toString();
         /** Get first commit SHA */
-        String s = sha1(classtoString);
+        String s = sha1(getClassBytes(firstCommit));
 
         /** Write commit */
         File outFile = Utils.join(COMMIT_DIR, s);
@@ -262,5 +260,17 @@ public class Repository {
         root.put(s);
         writeObject(TREE_PATH, root);
         writeObject(STAGE_PATH, stage);
+    }
+
+    public static byte[] getClassBytes(Object myObject) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+            oos.writeObject(myObject);
+            oos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        byte[] classBytes = baos.toByteArray();
+        return classBytes;
     }
 }

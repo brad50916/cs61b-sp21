@@ -43,7 +43,7 @@ public class Tree implements Serializable {
                 this.head = master;
             } else {
                 this.head.getChildren().put(commit, temp);
-                this.head = master.getChildren().get(commit);
+                this.head = head.getChildren().get(commit);
             }
         }
         size++;
