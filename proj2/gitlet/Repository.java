@@ -85,6 +85,21 @@ public class Repository {
             System.out.println();
         }
     }
+    public static void find(String commitMessage) {
+        List<String> allCommits = plainFilenamesIn(COMMIT_DIR);
+        boolean find = false;
+        for (String s : allCommits) {
+            File inFile = Utils.join(COMMIT_DIR, s);
+            Commit c = readObject(inFile, Commit.class);
+            if (c.getMessage().equals(commitMessage)) {
+                find = true;
+                System.out.println(s);
+            }
+        }
+        if (find == false) {
+            System.out.println("Found no commit with that message.");
+        }
+    }
     private static String getSHAfromfile(String fileName) {
         /** Find file's path */
         File f = Utils.join(CWD, fileName);
