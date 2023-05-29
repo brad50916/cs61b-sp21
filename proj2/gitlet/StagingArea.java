@@ -10,8 +10,10 @@ public class StagingArea implements Serializable {
      * Key is relative file path, value is its SHA
      */
     private HashMap<String,String> blobs;
+    private HashSet<String> rmBlobs;
     public StagingArea() {
         blobs = new HashMap<>();
+        rmBlobs = new HashSet<>();
     }
     public HashMap<String,String> getBlobs() {
         return blobs;
@@ -21,5 +23,11 @@ public class StagingArea implements Serializable {
     }
     public void removeBlob(String path) {
         blobs.remove(path);
+    }
+    public HashSet<String> getRmBolbsBlobs() {
+        return rmBlobs;
+    }
+    public void addtormBlob(String path) {
+        rmBlobs.add(path);
     }
 }

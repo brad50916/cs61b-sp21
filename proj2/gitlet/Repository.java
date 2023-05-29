@@ -2,10 +2,6 @@ package gitlet;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Date;
-import java.util.Formatter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -76,8 +72,7 @@ public class Repository {
             }
         }
     }
-    /** Add file to staging area */
-    public static void addFile(String fileName) {
+    private static String getSHAfromfile(String fileName) {
         /** Find file's path */
         File f = Utils.join(CWD, fileName);
 
@@ -97,16 +92,29 @@ public class Repository {
         } catch (IOException e) {
             System.out.println("Error reading the file: " + e.getMessage());
         }
+        return s;
+    }
+    private static Commit getHeadCommit() {
+        /** Get tree */
+        Tree temp = readObject(TREE_PATH, Tree.class);
+        /** Get tree Head commit SHA */
+        String sha = temp.getHead().getCommitSHA();
+        /** Using SHA to get the commit file */
+        File inFile = Utils.join(COMMIT_DIR, sha);
+        Commit c = readObject(inFile, Commit.class);
+        return c;
+    }
+    /** Add file to staging area */
+    public static void addFile(String fileName) {
+        String fileSHA = getSHAfromfile(fileName);
 
         /** Load tree */
         Tree temp = readObject(TREE_PATH, Tree.class);
 
         /** If main not equal to root, find whether the file has been changed */
         if (temp.getSize() != 1) {
-            /** Get master commit */
-            String sha = temp.getHead().getCommitSHA();
-            File inFile = Utils.join(COMMIT_DIR, sha);
-            Commit c = readObject(inFile, Commit.class);
+            /** Get head commit */
+            Commit c = getHeadCommit();
 
             /** Get the commits blobs */
             HashMap<String,String> h = c.getBlobs();
@@ -114,7 +122,7 @@ public class Repository {
             /** Check the corresponding SHA is equal or not compared to previous commit
              *  If is equal, remove the file from the stage.
              */
-            if (h.containsKey(fileName) && s.equals(h.get(fileName))) {
+            if (h.containsKey(fileName) && fileSHA.equals(h.get(fileName))) {
                 System.out.println("there is no change to the file compared to previous commit");
                 StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
                 if (stage.getBlobs().containsKey(fileName)) {
@@ -129,13 +137,13 @@ public class Repository {
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
         HashMap<String,String> blobs = stage.getBlobs();
 
-        if (blobs.containsKey(fileName) && s.equals(blobs.get(fileName))) {
+        if (blobs.containsKey(fileName) && fileSHA.equals(blobs.get(fileName))) {
             System.out.println("there is no change to the file compared to previous add version");
             return;
         }
 
         /** Add the file to staging area */
-        stage.putBlob(fileName, s);
+        stage.putBlob(fileName, fileSHA);
         writeObject(STAGE_PATH, stage);
     }
     /** Creating commit */
@@ -144,6 +152,7 @@ public class Repository {
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
         /** Get staging area Blobs HashMap */
         HashMap<String,String> stageBlobs = stage.getBlobs();
+        HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
         /** If there is no file in stage area, return */
         if (stageBlobs.size() == 0) {
             System.out.println("No changes added to the commit.");
@@ -167,13 +176,17 @@ public class Repository {
          *  add files to new Blobs HashMap except for those in remove Blobs HashSet
          */
         for (String Key: previousBolbs.keySet()){
-            curBolbs.put(Key,previousBolbs.get(Key));
+            if (!rmBlobs.contains(Key)){
+                curBolbs.put(Key,previousBolbs.get(Key));
+            }
         }
         /** Iterate through the staging area Blobs HashMap,
          *  add files to new Blobs HashMap except for those in remove Blobs HashSet
          */
         for (String Key: stageBlobs.keySet()) {
-            curBolbs.put(Key, stageBlobs.get(Key));
+            if (!rmBlobs.contains(Key)) {
+                curBolbs.put(Key, stageBlobs.get(Key));
+            }
         }
         /** Creating commit */
         Commit newCommit = new Commit(message, sha, curBolbs);
@@ -190,25 +203,41 @@ public class Repository {
         stage = new StagingArea();
         writeObject(STAGE_PATH, stage);
     }
-    public static void Rm(String message) {
+    public static void Rm(String fileName) {
+        boolean changed = false;
+
         /** Get staging area */
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
         /** Get staging area Blobs HashMap */
         HashMap<String,String> stageBlobs = stage.getBlobs();
-//        if (blobs.containsKey(fileName) && s.equals(blobs.get(fileName))) {
-//            System.out.println("there is no change to the file compared to previous add version");
-//            return;
-//        }
+        /** If file exist in staging area, remove it */
+        if (stageBlobs.containsKey(fileName)) {
+            System.out.println("Remove file from staging area");
+            stage.removeBlob(fileName);
+            writeObject(STAGE_PATH, stage);
+            changed = true;
+        }
 
-        /** Get tree */
-        Tree temp = readObject(TREE_PATH, Tree.class);
-        /** Get tree Head commit SHA */
-        String sha = temp.getHead().getCommitSHA();
-        /** Using SHA to get the commit file */
-        File inFile = Utils.join(COMMIT_DIR, sha);
-        Commit c = readObject(inFile, Commit.class);
         /** Get Head commit Blobs HashMap */
+        Commit c = getHeadCommit();
         HashMap<String,String> headBlobs = c.getBlobs();
+        /** If file exist in current commit, remove it */
+        if (headBlobs.containsKey(fileName)) {
+            System.out.println("Remove file from the working directory");
+            /** Stage it for removal */
+            stage.addtormBlob(fileName);
+            writeObject(STAGE_PATH, stage);
+            /** Remove the file from the working directory  */
+            File f = Utils.join(CWD, fileName);
+            if (restrictedDelete(f) == false) {
+                System.out.println("Fail to delete the file");
+            }
+            changed = true;
+        }
+
+        if (changed == false) {
+            System.out.println("No reason to remove the file.");
+        }
     }
     /** Initialize gitlet */
     public static void initialCommit() {
