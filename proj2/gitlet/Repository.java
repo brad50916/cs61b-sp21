@@ -116,6 +116,20 @@ public class Repository {
                 System.out.println(Key);
             }
         }
+        System.out.println("");
+        System.out.println("=== Staged Files ===");
+        StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
+        HashMap<String,String> blobs = stage.getBlobs();
+        HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
+        for (String Key: blobs.keySet()){
+            System.out.println(Key);
+        }
+        System.out.println("");
+        System.out.println("=== Removed Files ===");
+        for (String Key : rmBlobs){
+            System.out.println(Key);
+        }
+        System.out.println("");
     }
     private static String getSHAfromfile(String fileName) {
         /** Find file's path */
