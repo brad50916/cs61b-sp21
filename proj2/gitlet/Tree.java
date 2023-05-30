@@ -55,4 +55,10 @@ public class Tree implements Serializable {
     public int getSize() {
         return size;
     }
+    public String getCurBranch() {
+        return curBranch;
+    }
+    public HashMap<String, TreeNode> getBranch() {
+        return branch;
+    }
 }

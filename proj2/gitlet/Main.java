@@ -36,14 +36,20 @@ public class Main {
                 Repository.Rm(args[1]);
                 break;
             case "log":
+                validateNumArgs("log", args, 1);
                 Repository.log();
                 break;
             case "global-log":
+                validateNumArgs("global-log", args, 1);
                 Repository.globalLog();
                 break;
             case "find":
                 validateNumArgs("find", args, 2);
                 Repository.find(args[1]);
+                break;
+            case "status":
+                validateNumArgs("status", args, 1);
+                Repository.status();
                 break;
             default:
                 throw new IllegalArgumentException("No command with that name exists.");

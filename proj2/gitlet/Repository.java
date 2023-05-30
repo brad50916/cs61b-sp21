@@ -100,6 +100,23 @@ public class Repository {
             System.out.println("Found no commit with that message.");
         }
     }
+    public static void status() {
+        System.out.println("=== Branches ===");
+        Tree temp = readObject(TREE_PATH, Tree.class);
+        String curBranch = temp.getCurBranch();
+        HashMap<String, Tree.TreeNode> branch = temp.getBranch();
+        if (curBranch.equals("master")) System.out.print("*");
+        System.out.println("master");
+        System.out.println("other-branch");
+        for (String Key: branch.keySet()){
+            if (Key.equals("master")) continue;
+            if (Key.equals(curBranch)) {
+                System.out.println("*" + Key);
+            } else {
+                System.out.println(Key);
+            }
+        }
+    }
     private static String getSHAfromfile(String fileName) {
         /** Find file's path */
         File f = Utils.join(CWD, fileName);
