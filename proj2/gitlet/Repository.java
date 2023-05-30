@@ -2,9 +2,7 @@ package gitlet;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static gitlet.Utils.*;
 
@@ -105,10 +103,14 @@ public class Repository {
         Tree temp = readObject(TREE_PATH, Tree.class);
         String curBranch = temp.getCurBranch();
         HashMap<String, Tree.TreeNode> branch = temp.getBranch();
+        SortedSet<String> sortSet = new TreeSet<>();
+        for (String Key: branch.keySet()){
+            sortSet.add(Key);
+        }
         if (curBranch.equals("master")) System.out.print("*");
         System.out.println("master");
         System.out.println("other-branch");
-        for (String Key: branch.keySet()){
+        for (String Key: sortSet){
             if (Key.equals("master")) continue;
             if (Key.equals(curBranch)) {
                 System.out.println("*" + Key);
@@ -120,13 +122,21 @@ public class Repository {
         System.out.println("=== Staged Files ===");
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
         HashMap<String,String> blobs = stage.getBlobs();
-        HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
+        sortSet = new TreeSet<>();
         for (String Key: blobs.keySet()){
+            sortSet.add(Key);
+        }
+        for (String Key: sortSet){
             System.out.println(Key);
         }
         System.out.println("");
         System.out.println("=== Removed Files ===");
-        for (String Key : rmBlobs){
+        HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
+        sortSet = new TreeSet<>();
+        for (String Key: rmBlobs){
+            sortSet.add(Key);
+        }
+        for (String Key : sortSet){
             System.out.println(Key);
         }
         System.out.println("");
