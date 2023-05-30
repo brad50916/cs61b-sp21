@@ -16,7 +16,7 @@ public class Tree implements Serializable {
         this.root = null;
         this.head = null;
         curBranch = "master";
-        this.branch.put(curBranch, null);
+        this.branch = new HashMap<>();
     }
     public class TreeNode implements Serializable{
         private String commitSHA;
@@ -48,9 +48,6 @@ public class Tree implements Serializable {
     }
     public TreeNode getRoot() {
         return root;
-    }
-    public TreeNode getMaster() {
-        return master;
     }
     public TreeNode getHead() {
         return head;
