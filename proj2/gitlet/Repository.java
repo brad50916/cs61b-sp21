@@ -1,6 +1,7 @@
 package gitlet;
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -29,6 +30,10 @@ public class Repository {
     public static final File BOLB_DIR = join(CWD, ".gitlet", "bolbs");
     public static final File TREE_PATH = join(CWD,".gitlet", "tree");
     public static final File STAGE_PATH = join(CWD,".gitlet", "stage");
+    private static String[] excludedPrefixDir = new String[]{".", "gitlet", "testing"};
+    private static String[] excludedPrefixFile = new String[]{".DS_Store", "Makefile", "pom.xml", "gitlet-design.md"};
+    private static List<String> recordFile;
+
 
     public static boolean setupPersistence() {
         /** if file has been set up before, print error message and return */
@@ -140,7 +145,63 @@ public class Repository {
             System.out.println(Key);
         }
         System.out.println("");
+        System.out.println("=== Modifications Not Staged For Commit ===");
+        System.out.println("");
+        System.out.println("=== Untracked Files ===");
+        recordFile = new ArrayList<>();
+        traverseDirectory(CWD);
+        String headCommitSHA = temp.getHead().getCommitSHA();
+        File inFile = Utils.join(COMMIT_DIR, headCommitSHA);
+        Commit c = readObject(inFile, Commit.class);
+        for (String s : recordFile) {
+            if (!c.getBlobs().containsKey(s) && !blobs.containsKey(s)) {
+                System.out.println(s);
+            }
+        }
+        System.out.println("");
     }
+    private static void traverseDirectory(File directory) {
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && !isFileExcluded(file)) {
+                    Path pathAbsolute = file.toPath();
+                    Path pathBase = CWD.toPath();
+                    Path pathRelative = pathBase.relativize(pathAbsolute);
+                    recordFile.add(pathRelative.toString());
+                } else if (file.isDirectory() && !isDicExcluded(file)) {
+                    traverseDirectory(file);
+                }
+            }
+        }
+    }
+    private static boolean isDicExcluded(File file) {
+        String fileName = file.getName();
+        boolean flag = false;
+        for (String s : excludedPrefixDir) {
+            if (fileName.startsWith(s)) {
+                flag = true;
+            }
+        }
+        return flag;
+    }
+    private static boolean isFileExcluded(File file) {
+        String fileName = file.getName();
+        boolean flag = false;
+        for (String s : excludedPrefixFile) {
+            if (fileName.startsWith(s)) {
+                flag = true;
+            }
+        }
+        return flag;
+    }
+    private static boolean isFileTracked(File file) {
+        // Implement your own logic to determine if the file is tracked or untracked
+        // This could involve checking against a list of tracked files or using other criteria
+        // Return true if the file is tracked, false if it is untracked
+        return false;
+    }
+
     private static String getSHAfromfile(String fileName) {
         /** Find file's path */
         File f = Utils.join(CWD, fileName);
