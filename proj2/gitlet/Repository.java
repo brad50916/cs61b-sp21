@@ -252,7 +252,22 @@ public class Repository {
     }
     /** checkout [commit id] -- [file name] */
     public static void checkoutIDFileName(String commitId, String fileName) {
-
+        File inFile = Utils.join(COMMIT_DIR, commitId);
+        if (!inFile.exists()) {
+            System.out.println("No commit with that id exists.");
+            System.exit(0);
+        }
+        Commit c = readObject(inFile, Commit.class);
+        HashMap<String,String> bolbs = c.getBlobs();
+        if (!bolbs.containsKey(fileName)) {
+            System.out.println("File does not exist in that commit.");
+            System.exit(0);
+        }
+        String oldFileSHA = bolbs.get(fileName);
+        File inFile1 = Utils.join(BOLB_DIR, oldFileSHA);
+        String oldFile = readContentsAsString(inFile1);
+        File outFile = Utils.join(CWD, fileName);
+        writeContents(outFile, oldFile);
     }
     /** checkout [branch name] */
     public static void checkoutBranch(String branchName) {
