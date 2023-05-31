@@ -271,7 +271,20 @@ public class Repository {
     }
     /** checkout [branch name] */
     public static void checkoutBranch(String branchName) {
-
+        Tree temp = readObject(TREE_PATH, Tree.class);
+        HashMap<String, Tree.TreeNode> branch = temp.getBranch();
+        if (!branch.containsKey(branchName)) {
+            System.out.println("No such branch exists.");
+            System.exit(0);
+        }
+        if (branchName.equals(temp.getCurBranch())) {
+            System.out.println("No need to checkout the current branch.");
+            System.exit(0);
+        }
+        if (getUntrackFile().size() > 0) {
+            System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+            System.exit(0);
+        }
     }
     /** Add file to staging area */
     public static void addFile(String fileName) {
