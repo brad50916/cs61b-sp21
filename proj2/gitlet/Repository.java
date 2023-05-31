@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static gitlet.Utils.*;
 
@@ -293,6 +294,16 @@ public class Repository {
         for (String s : bolbs.keySet()) {
             File inFile1 = Utils.join(BOLB_DIR, bolbs.get(s));
             String oldFile = readContentsAsString(inFile1);
+            String[] splitPath = s.split(Pattern.quote("/"));
+            if (splitPath.length > 1) {
+                File DIR = Utils.join(CWD);
+                for (int i = 0; i < splitPath.length - 1; i++) {
+                    DIR = Utils.join(DIR, splitPath[i]);
+                    if (!DIR.exists()) {
+                        DIR.mkdir();
+                    }
+                }
+            }
             File outFile = Utils.join(CWD, s);
             writeContents(outFile, oldFile);
         }
@@ -311,6 +322,17 @@ public class Repository {
                 }
             }
         }
+    }
+    public static void branch(String branchName) {
+        Tree temp = readObject(TREE_PATH, Tree.class);
+        HashMap<String, Tree.TreeNode> branch = temp.getBranch();
+        if (branch.containsKey(branchName)) {
+            System.out.println("A branch with that name already exists.");
+            System.exit(0);
+        }
+        branch.put(branchName, branch.get(temp.getCurBranch()));
+        temp.changeBranch(branchName);
+        writeObject(TREE_PATH, temp);
     }
     /** Add file to staging area */
     public static void addFile(String fileName) {
@@ -413,7 +435,7 @@ public class Repository {
         File outFile = Utils.join(COMMIT_DIR, s);
         writeObject(outFile, newCommit);
 
-        /** Write tree and stage */
+        /** Write to tree and stage */
         temp.put(s);
         writeObject(TREE_PATH, temp);
         stage = new StagingArea();

@@ -68,6 +68,10 @@ public class Main {
                             String.format("Invalid command for checkout."));
                 }
                 break;
+            case "branch":
+                validateNumArgs("branch", args, 2);
+                Repository.branch(args[1]);
+                break;
             default:
                 throw new IllegalArgumentException("No command with that name exists.");
         }
