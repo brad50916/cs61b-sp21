@@ -285,6 +285,19 @@ public class Repository {
             System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
             System.exit(0);
         }
+
+    }
+    private static void rmAllFile(File directory) {
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && !isFileExcluded(file)) {
+                    file.delete();
+                } else if (file.isDirectory() && !isDicExcluded(file)) {
+                    file.delete();
+                }
+            }
+        }
     }
     /** Add file to staging area */
     public static void addFile(String fileName) {
