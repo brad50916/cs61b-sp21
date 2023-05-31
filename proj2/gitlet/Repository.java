@@ -148,6 +148,17 @@ public class Repository {
         System.out.println("=== Modifications Not Staged For Commit ===");
         System.out.println("");
         System.out.println("=== Untracked Files ===");
+        List<String> untrackfile = getUntrackFile();
+        for (String s : untrackfile) {
+            System.out.println(s);
+        }
+        System.out.println("");
+    }
+    private static List<String> getUntrackFile () {
+        List<String> untrackfile = new ArrayList<>();
+        Tree temp = readObject(TREE_PATH, Tree.class);
+        StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
+        HashMap<String,String> blobs = stage.getBlobs();
         recordFile = new ArrayList<>();
         traverseDirectory(CWD);
         String headCommitSHA = temp.getHead().getCommitSHA();
@@ -155,10 +166,10 @@ public class Repository {
         Commit c = readObject(inFile, Commit.class);
         for (String s : recordFile) {
             if (!c.getBlobs().containsKey(s) && !blobs.containsKey(s)) {
-                System.out.println(s);
+                untrackfile.add(s);
             }
         }
-        System.out.println("");
+        return untrackfile;
     }
     private static void traverseDirectory(File directory) {
         File[] files = directory.listFiles();
