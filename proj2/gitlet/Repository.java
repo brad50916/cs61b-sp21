@@ -285,7 +285,19 @@ public class Repository {
             System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
             System.exit(0);
         }
-
+        rmAllFile(CWD);
+        String commitSHA = branch.get(branchName).getCommitSHA();
+        File inFile = Utils.join(COMMIT_DIR, commitSHA);
+        Commit c = readObject(inFile, Commit.class);
+        HashMap<String,String> bolbs = c.getBlobs();
+        for (String s : bolbs.keySet()) {
+            File inFile1 = Utils.join(BOLB_DIR, bolbs.get(s));
+            String oldFile = readContentsAsString(inFile1);
+            File outFile = Utils.join(CWD, s);
+            writeContents(outFile, oldFile);
+        }
+        temp.changeBranch(branchName);
+        writeObject(TREE_PATH, temp);
     }
     private static void rmAllFile(File directory) {
         File[] files = directory.listFiles();
@@ -294,6 +306,7 @@ public class Repository {
                 if (file.isFile() && !isFileExcluded(file)) {
                     file.delete();
                 } else if (file.isDirectory() && !isDicExcluded(file)) {
+                    rmAllFile(file);
                     file.delete();
                 }
             }
@@ -326,6 +339,7 @@ public class Repository {
                     writeObject(STAGE_PATH, stage);
                     return;
                 }
+                return;
             }
         }
         /** Find whether the file has been changed to previously add version */

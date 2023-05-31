@@ -61,4 +61,11 @@ public class Tree implements Serializable {
     public HashMap<String, TreeNode> getBranch() {
         return branch;
     }
+    public void changeBranch(String b) {
+        if (!branch.containsKey(b)) {
+            System.out.println("No such branch exists.");
+            System.exit(0);
+        }
+        this.curBranch = b;
+    }
 }
