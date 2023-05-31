@@ -51,6 +51,23 @@ public class Main {
                 validateNumArgs("status", args, 1);
                 Repository.status();
                 break;
+            case "checkout":
+                /** checkout [branch name] */
+                if (args.length == 2) {
+                    Repository.checkoutBranch(args[1]);
+                }
+                /** checkout -- [file name] */
+                else if (args.length == 3 && args[1].equals("--")) {
+                    Repository.checkoutFileName(args[2]);
+                }
+                /** checkout [commit id] -- [file name] */
+                else if (args.length == 4 && args[2].equals("--")) {
+                    Repository.checkoutIDFileName(args[1], args[3]);
+                } else {
+                    throw new RuntimeException(
+                            String.format("Invalid command for checkout."));
+                }
+                break;
             default:
                 throw new IllegalArgumentException("No command with that name exists.");
         }

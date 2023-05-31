@@ -156,14 +156,11 @@ public class Repository {
     }
     private static List<String> getUntrackFile () {
         List<String> untrackfile = new ArrayList<>();
-        Tree temp = readObject(TREE_PATH, Tree.class);
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
         HashMap<String,String> blobs = stage.getBlobs();
         recordFile = new ArrayList<>();
         traverseDirectory(CWD);
-        String headCommitSHA = temp.getHead().getCommitSHA();
-        File inFile = Utils.join(COMMIT_DIR, headCommitSHA);
-        Commit c = readObject(inFile, Commit.class);
+        Commit c = getHeadCommit();
         for (String s : recordFile) {
             if (!c.getBlobs().containsKey(s) && !blobs.containsKey(s)) {
                 untrackfile.add(s);
@@ -206,12 +203,6 @@ public class Repository {
         }
         return flag;
     }
-    private static boolean isFileTracked(File file) {
-        // Implement your own logic to determine if the file is tracked or untracked
-        // This could involve checking against a list of tracked files or using other criteria
-        // Return true if the file is tracked, false if it is untracked
-        return false;
-    }
 
     private static String getSHAfromfile(String fileName) {
         /** Find file's path */
@@ -244,6 +235,28 @@ public class Repository {
         File inFile = Utils.join(COMMIT_DIR, sha);
         Commit c = readObject(inFile, Commit.class);
         return c;
+    }
+    /** checkout -- [file name] */
+    public static void checkoutFileName(String fileName) {
+        Commit c = getHeadCommit();
+        HashMap<String,String> bolbs = c.getBlobs();
+        if (!bolbs.containsKey(fileName)) {
+            System.out.println("File does not exist in that commit.");
+            System.exit(0);
+        }
+        String oldFileSHA = bolbs.get(fileName);
+        File inFile = Utils.join(BOLB_DIR, oldFileSHA);
+        String oldFile = readContentsAsString(inFile);
+        File outFile = Utils.join(CWD, fileName);
+        writeContents(outFile, oldFile);
+    }
+    /** checkout [commit id] -- [file name] */
+    public static void checkoutIDFileName(String commitId, String fileName) {
+
+    }
+    /** checkout [branch name] */
+    public static void checkoutBranch(String branchName) {
+
     }
     /** Add file to staging area */
     public static void addFile(String fileName) {
@@ -332,9 +345,9 @@ public class Repository {
         /** Creating Blobs */
         for (String Key: curBolbs.keySet()) {
             File f = Utils.join(CWD, Key);
-            String filetoString = readContentsAsString(f);
+            byte[] filetoByte = readContents(f);
             File outFile = Utils.join(BOLB_DIR, curBolbs.get(Key));
-            writeContents(outFile, filetoString);
+            writeContents(outFile, filetoByte);
         }
 
         /** Creating commit */
