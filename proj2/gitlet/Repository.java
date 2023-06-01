@@ -287,9 +287,14 @@ public class Repository {
             System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
             System.exit(0);
         }
-        rmAllFile(CWD);
         String commitSHA = branch.get(branchName).getCommitSHA();
-        File inFile = Utils.join(COMMIT_DIR, commitSHA);
+        replaceFilefromcommit(commitSHA);
+        temp.changeBranch(branchName);
+        writeObject(TREE_PATH, temp);
+    }
+    private static void replaceFilefromcommit(String commitID) {
+        rmAllFile(CWD);
+        File inFile = Utils.join(COMMIT_DIR, commitID);
         Commit c = readObject(inFile, Commit.class);
         HashMap<String, String> bolbs = c.getBlobs();
         for (String s : bolbs.keySet()) {
@@ -308,8 +313,20 @@ public class Repository {
             File outFile = Utils.join(CWD, s);
             writeContents(outFile, oldFile);
         }
-        temp.changeBranch(branchName);
-        writeObject(TREE_PATH, temp);
+    }
+    public static void reset(String commitId) {
+        File inFile = Utils.join(COMMIT_DIR, commitId);
+        if (!inFile.exists()) {
+            System.out.println("No commit with that id exists.");
+            System.exit(0);
+        }
+        if (getUntrackFile().size() > 0) {
+            System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+            System.exit(0);
+        }
+        replaceFilefromcommit(commitId);
+        Tree temp = readObject(TREE_PATH, Tree.class);
+
     }
     private static void rmAllFile(File directory) {
         File[] files = directory.listFiles();
