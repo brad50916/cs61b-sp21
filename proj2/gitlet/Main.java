@@ -23,11 +23,11 @@ public class Main {
                 break;
             case "commit":
                 validateNumArgs("commit", args, 2);
-                Repository.Commit(args[1]);
+                Repository.commitBolb(args[1]);
                 break;
             case "rm":
                 validateNumArgs("commit", args, 2);
-                Repository.Rm(args[1]);
+                Repository.rmFile(args[1]);
                 break;
             case "log":
                 validateNumArgs("log", args, 1);

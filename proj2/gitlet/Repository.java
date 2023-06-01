@@ -11,12 +11,10 @@ import static gitlet.Utils.*;
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
- *  @author TODO
+ *  @author Bard
  */
 public class Repository {
     /**
-     * TODO: add instance variables here.
-     *
      * List all instance variables of the Repository class here with a useful
      * comment above them describing what that variable represents and how that
      * variable is used. We've provided two examples for you.
@@ -28,8 +26,8 @@ public class Repository {
     public static final File GITLET_DIR = join(CWD, ".gitlet");
     public static final File COMMIT_DIR = join(CWD, ".gitlet", "commits");
     public static final File BOLB_DIR = join(CWD, ".gitlet", "bolbs");
-    public static final File TREE_PATH = join(CWD,".gitlet", "tree");
-    public static final File STAGE_PATH = join(CWD,".gitlet", "stage");
+    public static final File TREE_PATH = join(CWD, ".gitlet", "tree");
+    public static final File STAGE_PATH = join(CWD, ".gitlet", "stage");
     private static String[] excludedPrefixDir = new String[]{".", "gitlet", "testing"};
     private static String[] excludedPrefixFile = new String[]{".DS_Store", "Makefile", "pom.xml", "gitlet-design.md"};
     private static List<String> recordFile;
@@ -61,7 +59,7 @@ public class Repository {
         File inFile = Utils.join(COMMIT_DIR, sha);
         /** Get head's parent commit if it has parent */
         String curSHA = sha;
-        while(true) {
+        while (true) {
             Commit c = readObject(inFile, Commit.class);
             System.out.println("===");
             System.out.println("commit " + curSHA);
@@ -99,7 +97,7 @@ public class Repository {
                 System.out.println(s);
             }
         }
-        if (find == false) {
+        if (!find) {
             System.out.println("Found no commit with that message.");
         }
     }
@@ -109,40 +107,44 @@ public class Repository {
         String curBranch = temp.getCurBranch();
         HashMap<String, Tree.TreeNode> branch = temp.getBranch();
         SortedSet<String> sortSet = new TreeSet<>();
-        for (String Key: branch.keySet()){
-            sortSet.add(Key);
+        for (String key: branch.keySet()) {
+            sortSet.add(key);
         }
-        if (curBranch.equals("master")) System.out.print("*");
+        if (curBranch.equals("master")) {
+            System.out.print("*");
+        }
         System.out.println("master");
         System.out.println("other-branch");
-        for (String Key: sortSet){
-            if (Key.equals("master")) continue;
-            if (Key.equals(curBranch)) {
-                System.out.println("*" + Key);
+        for (String key: sortSet) {
+            if (key.equals("master")) {
+                continue;
+            }
+            if (key.equals(curBranch)) {
+                System.out.println("*" + key);
             } else {
-                System.out.println(Key);
+                System.out.println(key);
             }
         }
         System.out.println("");
         System.out.println("=== Staged Files ===");
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
-        HashMap<String,String> blobs = stage.getBlobs();
+        HashMap<String, String> blobs = stage.getBlobs();
         sortSet = new TreeSet<>();
-        for (String Key: blobs.keySet()){
-            sortSet.add(Key);
+        for (String key: blobs.keySet()) {
+            sortSet.add(key);
         }
-        for (String Key: sortSet){
-            System.out.println(Key);
+        for (String key: sortSet) {
+            System.out.println(key);
         }
         System.out.println("");
         System.out.println("=== Removed Files ===");
         HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
         sortSet = new TreeSet<>();
-        for (String Key: rmBlobs){
-            sortSet.add(Key);
+        for (String key: rmBlobs) {
+            sortSet.add(key);
         }
-        for (String Key : sortSet){
-            System.out.println(Key);
+        for (String key : sortSet) {
+            System.out.println(key);
         }
         System.out.println("");
         System.out.println("=== Modifications Not Staged For Commit ===");
@@ -154,10 +156,10 @@ public class Repository {
         }
         System.out.println("");
     }
-    private static List<String> getUntrackFile () {
+    private static List<String> getUntrackFile() {
         List<String> untrackfile = new ArrayList<>();
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
-        HashMap<String,String> blobs = stage.getBlobs();
+        HashMap<String, String> blobs = stage.getBlobs();
         recordFile = new ArrayList<>();
         traverseDirectory(CWD);
         Commit c = getHeadCommit();
@@ -239,7 +241,7 @@ public class Repository {
     /** checkout -- [file name] */
     public static void checkoutFileName(String fileName) {
         Commit c = getHeadCommit();
-        HashMap<String,String> bolbs = c.getBlobs();
+        HashMap<String, String> bolbs = c.getBlobs();
         if (!bolbs.containsKey(fileName)) {
             System.out.println("File does not exist in that commit.");
             System.exit(0);
@@ -258,7 +260,7 @@ public class Repository {
             System.exit(0);
         }
         Commit c = readObject(inFile, Commit.class);
-        HashMap<String,String> bolbs = c.getBlobs();
+        HashMap<String, String> bolbs = c.getBlobs();
         if (!bolbs.containsKey(fileName)) {
             System.out.println("File does not exist in that commit.");
             System.exit(0);
@@ -289,17 +291,17 @@ public class Repository {
         String commitSHA = branch.get(branchName).getCommitSHA();
         File inFile = Utils.join(COMMIT_DIR, commitSHA);
         Commit c = readObject(inFile, Commit.class);
-        HashMap<String,String> bolbs = c.getBlobs();
+        HashMap<String, String> bolbs = c.getBlobs();
         for (String s : bolbs.keySet()) {
             File inFile1 = Utils.join(BOLB_DIR, bolbs.get(s));
             String oldFile = readContentsAsString(inFile1);
             String[] splitPath = s.split(Pattern.quote("/"));
             if (splitPath.length > 1) {
-                File DIR = Utils.join(CWD);
+                File dir = Utils.join(CWD);
                 for (int i = 0; i < splitPath.length - 1; i++) {
-                    DIR = Utils.join(DIR, splitPath[i]);
-                    if (!DIR.exists()) {
-                        DIR.mkdir();
+                    dir = Utils.join(dir, splitPath[i]);
+                    if (!dir.exists()) {
+                        dir.mkdir();
                     }
                 }
             }
@@ -346,7 +348,7 @@ public class Repository {
             Commit c = getHeadCommit();
 
             /** Get the commits blobs */
-            HashMap<String,String> h = c.getBlobs();
+            HashMap<String, String> h = c.getBlobs();
 
             /** Check the corresponding SHA is equal or not compared to previous commit
              *  If is equal, remove the file from the stage.
@@ -365,7 +367,7 @@ public class Repository {
         }
         /** Find whether the file has been changed to previously add version */
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
-        HashMap<String,String> blobs = stage.getBlobs();
+        HashMap<String, String> blobs = stage.getBlobs();
 
         if (blobs.containsKey(fileName) && fileSHA.equals(blobs.get(fileName))) {
             System.out.println("there is no change to the file compared to previous add version");
@@ -377,11 +379,11 @@ public class Repository {
         writeObject(STAGE_PATH, stage);
     }
     /** Creating commit */
-    public static void Commit(String message) {
+    public static void commitBolb(String message) {
         /** Get staging area */
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
         /** Get staging area Blobs HashMap */
-        HashMap<String,String> stageBlobs = stage.getBlobs();
+        HashMap<String, String> stageBlobs = stage.getBlobs();
         HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
         /** If there is no file in stage area, return */
         if (stageBlobs.size() == 0 && rmBlobs.size() == 0) {
@@ -397,32 +399,32 @@ public class Repository {
         File inFile = Utils.join(COMMIT_DIR, sha);
         Commit c = readObject(inFile, Commit.class);
         /** Get Head commit Blobs HashMap */
-        HashMap<String,String> previousBolbs = c.getBlobs();
+        HashMap<String, String> previousBolbs = c.getBlobs();
 
         /** Creating new Blobs HashMap */
-        HashMap<String,String> curBolbs = new HashMap<>();
+        HashMap<String, String> curBolbs = new HashMap<>();
 
         /** Iterate through the Head commit Blobs HashMap,
          *  add files to new Blobs HashMap except for those in remove Blobs HashSet
          */
-        for (String Key: previousBolbs.keySet()){
-            if (!rmBlobs.contains(Key)){
-                curBolbs.put(Key, previousBolbs.get(Key));
+        for (String key: previousBolbs.keySet()) {
+            if (!rmBlobs.contains(key)) {
+                curBolbs.put(key, previousBolbs.get(key));
             }
         }
         /** Iterate through the staging area Blobs HashMap,
          *  add files to new Blobs HashMap except for those in remove Blobs HashSet
          */
-        for (String Key: stageBlobs.keySet()) {
-            if (!rmBlobs.contains(Key)) {
-                curBolbs.put(Key, stageBlobs.get(Key));
+        for (String key: stageBlobs.keySet()) {
+            if (!rmBlobs.contains(key)) {
+                curBolbs.put(key, stageBlobs.get(key));
             }
         }
         /** Creating Blobs */
-        for (String Key: curBolbs.keySet()) {
-            File f = Utils.join(CWD, Key);
+        for (String key: curBolbs.keySet()) {
+            File f = Utils.join(CWD, key);
             byte[] filetoByte = readContents(f);
-            File outFile = Utils.join(BOLB_DIR, curBolbs.get(Key));
+            File outFile = Utils.join(BOLB_DIR, curBolbs.get(key));
             writeContents(outFile, filetoByte);
         }
 
@@ -440,13 +442,13 @@ public class Repository {
         stage = new StagingArea();
         writeObject(STAGE_PATH, stage);
     }
-    public static void Rm(String fileName) {
+    public static void rmFile(String fileName) {
         boolean changed = false;
 
         /** Get staging area */
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
         /** Get staging area Blobs HashMap */
-        HashMap<String,String> stageBlobs = stage.getBlobs();
+        HashMap<String, String> stageBlobs = stage.getBlobs();
         /** If file exist in staging area, remove it */
         if (stageBlobs.containsKey(fileName)) {
             System.out.println("Remove file from staging area");
@@ -457,7 +459,7 @@ public class Repository {
 
         /** Get Head commit Blobs HashMap */
         Commit c = getHeadCommit();
-        HashMap<String,String> headBlobs = c.getBlobs();
+        HashMap<String, String> headBlobs = c.getBlobs();
         /** If file exist in current commit, remove it */
         if (headBlobs.containsKey(fileName)) {
             System.out.println("Remove file from the working directory");
@@ -466,20 +468,22 @@ public class Repository {
             writeObject(STAGE_PATH, stage);
             /** Remove the file from the working directory  */
             File f = Utils.join(CWD, fileName);
-            if (restrictedDelete(f) == false) {
+            if (!restrictedDelete(f)) {
                 System.out.println("Fail to delete the file");
             }
             changed = true;
         }
 
-        if (changed == false) {
+        if (!changed) {
             System.out.println("No reason to remove the file.");
         }
     }
     /** Initialize gitlet */
     public static void initialCommit() {
         /** Setup Persistence, if have been set up, just return */
-        if (setupPersistence() == false) return;
+        if (!setupPersistence()) {
+            return;
+        }
 
         /** Create instance variable of tree and stage*/
         Tree root = new Tree();
