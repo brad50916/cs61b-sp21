@@ -313,6 +313,8 @@ public class Repository {
             File outFile = Utils.join(CWD, s);
             writeContents(outFile, oldFile);
         }
+        StagingArea stage = new StagingArea();
+        writeObject(STAGE_PATH, stage);
     }
     public static void reset(String commitId) {
         File inFile = Utils.join(COMMIT_DIR, commitId);
