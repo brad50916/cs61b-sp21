@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
-
 import static gitlet.Utils.*;
 
 /** Represents a gitlet repository.

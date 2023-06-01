@@ -72,6 +72,15 @@ public class Main {
                 validateNumArgs("branch", args, 2);
                 Repository.branch(args[1]);
                 break;
+            case "rm-branch":
+                // TODO
+                break;
+            case "reset":
+                // TODO
+                break;
+            case "merge":
+                // TODO
+                break;
             default:
                 throw new IllegalArgumentException("No command with that name exists.");
         }

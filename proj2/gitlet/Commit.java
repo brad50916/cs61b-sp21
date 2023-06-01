@@ -3,6 +3,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 // TODO: any imports you need here
 
 // TODO: You'll likely use this in this class
@@ -36,9 +38,9 @@ public class Commit implements Serializable {
         this.message = message;
         /**  Generate The (Unix) Epoch time for initial commit timestamp */
         Date currentDate = new Date(0);
-        Formatter formatter = new Formatter();
-        String timestamp1 = formatter.format("%tF %tT", currentDate, currentDate).toString();
-        formatter.close();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM d HH:mm:ss yyyy Z");
+//        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-08:00"));
+        String timestamp1 = dateFormat.format(currentDate);
         this.timestamp = timestamp1;
         this.bolbs = new HashMap<>();
     }
@@ -48,9 +50,9 @@ public class Commit implements Serializable {
         this.firstParent = firstParent;
         this.bolbs = bolbs;
         Date currentDate = new Date();
-        Formatter formatter = new Formatter();
-        String timestamp1 = formatter.format("%tF %tT", currentDate, currentDate).toString();
-        formatter.close();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM d HH:mm:ss yyyy Z");
+//        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-08:00"));
+        String timestamp1 = dateFormat.format(currentDate);
         this.timestamp = timestamp1;
     }
 
@@ -60,9 +62,9 @@ public class Commit implements Serializable {
         this.secondParent = secondParent;
         this.bolbs = bolbs;
         Date currentDate = new Date();
-        Formatter formatter = new Formatter();
-        String timestamp1 = formatter.format("%tF %tT", currentDate, currentDate).toString();
-        formatter.close();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM d HH:mm:ss yyyy Z");
+//        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-08:00"));
+        String timestamp1 = dateFormat.format(currentDate);
         this.timestamp = timestamp1;
     }
 
