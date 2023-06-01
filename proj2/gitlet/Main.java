@@ -1,11 +1,6 @@
 package gitlet;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Formatter;
 /** Driver class for Gitlet, a subset of the Git version-control system.
- *  @author TODO
+ *  @author bard
  */
 public class Main {
 
@@ -17,13 +12,12 @@ public class Main {
             throw new IllegalArgumentException("Please enter a command.");
         }
         String firstArg = args[0];
-        switch(firstArg) {
+        switch (firstArg) {
             case "init":
                 validateNumArgs("init", args, 1);
                 Repository.initialCommit();
                 break;
             case "add":
-                // TODO: handle the `add [filename]` command
                 validateNumArgs("add", args, 2);
                 Repository.addFile(args[1]);
                 break;
@@ -55,13 +49,11 @@ public class Main {
                 /** checkout [branch name] */
                 if (args.length == 2) {
                     Repository.checkoutBranch(args[1]);
-                }
-                /** checkout -- [file name] */
-                else if (args.length == 3 && args[1].equals("--")) {
+                } else if (args.length == 3 && args[1].equals("--")) {
+                    /** checkout -- [file name] */
                     Repository.checkoutFileName(args[2]);
-                }
-                /** checkout [commit id] -- [file name] */
-                else if (args.length == 4 && args[2].equals("--")) {
+                } else if (args.length == 4 && args[2].equals("--")) {
+                    /** checkout [commit id] -- [file name] */
                     Repository.checkoutIDFileName(args[1], args[3]);
                 } else {
                     throw new RuntimeException(
