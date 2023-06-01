@@ -9,13 +9,13 @@ public class StagingArea implements Serializable {
      * Using Hashmap to store bolbs
      * Key is relative file path, value is its SHA
      */
-    private HashMap<String,String> blobs;
+    private HashMap<String, String> blobs;
     private HashSet<String> rmBlobs;
     public StagingArea() {
         blobs = new HashMap<>();
         rmBlobs = new HashSet<>();
     }
-    public HashMap<String,String> getBlobs() {
+    public HashMap<String, String> getBlobs() {
         return blobs;
     }
     public void putBlob(String path, String sha) {

@@ -1,10 +1,8 @@
 package gitlet;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Formatter;
 import java.util.HashMap;
 import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 // TODO: any imports you need here
 
 // TODO: You'll likely use this in this class
@@ -13,12 +11,10 @@ import java.util.TimeZone;
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
- *  @author TODO
+ *  @author Bard
  */
 public class Commit implements Serializable {
     /**
-     * TODO: add instance variables here.
-     *
      * List all instance variables of the Commit class here with a useful
      * comment above them describing what that variable represents and how that
      * variable is used. We've provided one example for `message`.
@@ -31,39 +27,36 @@ public class Commit implements Serializable {
     private String firstParent;
     private String secondParent;
     /** hashmap key is relative file path, value is its SHA */
-    private HashMap<String,String> bolbs;
+    private HashMap<String, String> bolbs;
 
     /** For initial commit **/
-    public Commit (String message) {
+    public Commit(String message) {
         this.message = message;
         /**  Generate The (Unix) Epoch time for initial commit timestamp */
         Date currentDate = new Date(0);
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM d HH:mm:ss yyyy Z");
-//        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-08:00"));
         String timestamp1 = dateFormat.format(currentDate);
         this.timestamp = timestamp1;
         this.bolbs = new HashMap<>();
     }
 
-    public Commit (String message, String firstParent, HashMap<String,String> bolbs) {
+    public Commit(String message, String firstParent, HashMap<String, String> bolbs) {
         this.message = message;
         this.firstParent = firstParent;
         this.bolbs = bolbs;
         Date currentDate = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM d HH:mm:ss yyyy Z");
-//        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-08:00"));
         String timestamp1 = dateFormat.format(currentDate);
         this.timestamp = timestamp1;
     }
 
-    public Commit (String message, String firstParent, String secondParent, HashMap<String,String> bolbs) {
+    public Commit(String message, String firstParent, String secondParent, HashMap<String, String> bolbs) {
         this.message = message;
         this.firstParent = firstParent;
         this.secondParent = secondParent;
         this.bolbs = bolbs;
         Date currentDate = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM d HH:mm:ss yyyy Z");
-//        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-08:00"));
         String timestamp1 = dateFormat.format(currentDate);
         this.timestamp = timestamp1;
     }
@@ -80,7 +73,7 @@ public class Commit implements Serializable {
     public String getSecondParent() {
         return secondParent;
     }
-    public HashMap<String,String> getBlobs() {
+    public HashMap<String, String> getBlobs() {
         return bolbs;
     }
 }

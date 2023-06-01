@@ -18,7 +18,7 @@ public class Tree implements Serializable {
         curBranch = "master";
         this.branch = new HashMap<>();
     }
-    public class TreeNode implements Serializable{
+    public class TreeNode implements Serializable {
         private String commitSHA;
         /** map key is SHA, value is child commit */
         private Map<String, TreeNode> children;
