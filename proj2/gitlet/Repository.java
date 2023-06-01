@@ -332,7 +332,20 @@ public class Repository {
             System.exit(0);
         }
         branch.put(branchName, branch.get(temp.getCurBranch()));
-        temp.changeBranch(branchName);
+        writeObject(TREE_PATH, temp);
+    }
+    public static void rmBranch(String branchName) {
+        Tree temp = readObject(TREE_PATH, Tree.class);
+        HashMap<String, Tree.TreeNode> branch = temp.getBranch();
+        if (!branch.containsKey(branchName)) {
+            System.out.println("A branch with that name does not exist.");
+            System.exit(0);
+        }
+        if (branchName.equals(temp.getCurBranch())) {
+            System.out.println("Cannot remove the current branch.");
+            System.exit(0);
+        }
+        branch.remove(branchName);
         writeObject(TREE_PATH, temp);
     }
     /** Add file to staging area */
