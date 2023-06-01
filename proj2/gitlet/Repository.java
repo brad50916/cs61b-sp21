@@ -55,7 +55,7 @@ public class Repository {
         /** Get tree */
         Tree temp = readObject(TREE_PATH, Tree.class);
         /** Get Head commit */
-        String sha = temp.getHead().getCommitSHA();
+        String sha = temp.getHead();
         File inFile = Utils.join(COMMIT_DIR, sha);
         /** Get head's parent commit if it has parent */
         String curSHA = sha;
@@ -105,7 +105,7 @@ public class Repository {
         System.out.println("=== Branches ===");
         Tree temp = readObject(TREE_PATH, Tree.class);
         String curBranch = temp.getCurBranch();
-        HashMap<String, Tree.TreeNode> branch = temp.getBranch();
+        HashMap<String, String> branch = temp.getBranch();
         SortedSet<String> sortSet = new TreeSet<>();
         for (String key: branch.keySet()) {
             sortSet.add(key);
@@ -232,7 +232,7 @@ public class Repository {
         /** Get tree */
         Tree temp = readObject(TREE_PATH, Tree.class);
         /** Get tree Head commit SHA */
-        String sha = temp.getHead().getCommitSHA();
+        String sha = temp.getHead();
         /** Using SHA to get the commit file */
         File inFile = Utils.join(COMMIT_DIR, sha);
         Commit c = readObject(inFile, Commit.class);
@@ -274,7 +274,7 @@ public class Repository {
     /** checkout [branch name] */
     public static void checkoutBranch(String branchName) {
         Tree temp = readObject(TREE_PATH, Tree.class);
-        HashMap<String, Tree.TreeNode> branch = temp.getBranch();
+        HashMap<String, String> branch = temp.getBranch();
         if (!branch.containsKey(branchName)) {
             System.out.println("No such branch exists.");
             System.exit(0);
@@ -287,7 +287,7 @@ public class Repository {
             System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
             System.exit(0);
         }
-        String commitSHA = branch.get(branchName).getCommitSHA();
+        String commitSHA = branch.get(branchName);
         replaceFilefromcommit(commitSHA);
         temp.changeBranch(branchName);
         writeObject(TREE_PATH, temp);
@@ -326,7 +326,8 @@ public class Repository {
         }
         replaceFilefromcommit(commitId);
         Tree temp = readObject(TREE_PATH, Tree.class);
-
+        temp.changeHead(commitId);
+        writeObject(TREE_PATH, temp);
     }
     private static void rmAllFile(File directory) {
         File[] files = directory.listFiles();
@@ -343,7 +344,7 @@ public class Repository {
     }
     public static void branch(String branchName) {
         Tree temp = readObject(TREE_PATH, Tree.class);
-        HashMap<String, Tree.TreeNode> branch = temp.getBranch();
+        HashMap<String, String> branch = temp.getBranch();
         if (branch.containsKey(branchName)) {
             System.out.println("A branch with that name already exists.");
             System.exit(0);
@@ -353,7 +354,7 @@ public class Repository {
     }
     public static void rmBranch(String branchName) {
         Tree temp = readObject(TREE_PATH, Tree.class);
-        HashMap<String, Tree.TreeNode> branch = temp.getBranch();
+        HashMap<String, String> branch = temp.getBranch();
         if (!branch.containsKey(branchName)) {
             System.out.println("A branch with that name does not exist.");
             System.exit(0);
@@ -424,7 +425,7 @@ public class Repository {
         /** Get tree */
         Tree temp = readObject(TREE_PATH, Tree.class);
         /** Get tree Head commit SHA */
-        String sha = temp.getHead().getCommitSHA();
+        String sha = temp.getHead();
         /** Using SHA to get the commit file */
         File inFile = Utils.join(COMMIT_DIR, sha);
         Commit c = readObject(inFile, Commit.class);
