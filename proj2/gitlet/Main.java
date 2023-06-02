@@ -54,6 +54,10 @@ public class Main {
                     Repository.checkoutFileName(args[2]);
                 } else if (args.length == 4 && args[2].equals("--")) {
                     /** checkout [commit id] -- [file name] */
+                    if (args[1].length() < 6) {
+                        System.out.println("Commit id length must be greater than or equal to 6");
+                        System.exit(0);
+                    }
                     Repository.checkoutIDFileName(args[1], args[3]);
                 } else {
                     throw new RuntimeException(

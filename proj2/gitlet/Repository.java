@@ -56,7 +56,9 @@ public class Repository {
         Tree temp = readObject(TREE_PATH, Tree.class);
         /* Get Head commit */
         String sha = temp.getHead();
-        File inFile = Utils.join(COMMIT_DIR, sha);
+        String firstTwo = sha.substring(0, 2);
+        String last = sha.substring(2, sha.length());
+        File inFile = Utils.join(COMMIT_DIR, firstTwo, last);
         /* Get head's parent commit if it has parent */
         String curSHA = sha;
         while (true) {
@@ -67,7 +69,10 @@ public class Repository {
             System.out.println(c.getMessage());
             System.out.println();
             if (c.getFirstParent() != null) {
-                inFile = Utils.join(COMMIT_DIR, c.getFirstParent());
+                String nextParentsha = c.getFirstParent();
+                firstTwo = nextParentsha.substring(0, 2);
+                last = nextParentsha.substring(2, sha.length());
+                inFile = Utils.join(COMMIT_DIR, firstTwo, last);
                 curSHA = c.getFirstParent();
             } else {
                 break;
@@ -75,26 +80,38 @@ public class Repository {
         }
     }
     public static void globalLog() {
-        List<String> allCommits = plainFilenamesIn(COMMIT_DIR);
-        for (String s : allCommits) {
-            File inFile = Utils.join(COMMIT_DIR, s);
-            Commit c = readObject(inFile, Commit.class);
-            System.out.println("===");
-            System.out.println("commit " + s);
-            System.out.println("Date: " + c.getTimestamp());
-            System.out.println(c.getMessage());
-            System.out.println();
+        String[] files = COMMIT_DIR.list();
+        if (files != null) {
+            for (String file : files) {
+                File inFile = Utils.join(COMMIT_DIR, file);
+                String[] subFiles = inFile.list();
+                for (String subFile : subFiles) {
+                    File inFile1 = Utils.join(COMMIT_DIR, file, subFile);
+                    Commit c = readObject(inFile1, Commit.class);
+                    System.out.println("===");
+                    System.out.println("commit " + file + subFile);
+                    System.out.println("Date: " + c.getTimestamp());
+                    System.out.println(c.getMessage());
+                    System.out.println();
+                }
+            }
         }
     }
     public static void find(String commitMessage) {
-        List<String> allCommits = plainFilenamesIn(COMMIT_DIR);
         boolean find = false;
-        for (String s : allCommits) {
-            File inFile = Utils.join(COMMIT_DIR, s);
-            Commit c = readObject(inFile, Commit.class);
-            if (c.getMessage().equals(commitMessage)) {
-                find = true;
-                System.out.println(s);
+        String[] files = COMMIT_DIR.list();
+        if (files != null) {
+            for (String file : files) {
+                File inFile = Utils.join(COMMIT_DIR, file);
+                String[] subFiles = inFile.list();
+                for (String subFile : subFiles) {
+                    File inFile1 = Utils.join(COMMIT_DIR, file, subFile);
+                    Commit c = readObject(inFile1, Commit.class);
+                    if (c.getMessage().equals(commitMessage)) {
+                        find = true;
+                        System.out.println(file + subFile);
+                    }
+                }
             }
         }
         if (!find) {
@@ -234,8 +251,7 @@ public class Repository {
         /* Get tree Head commit SHA */
         String sha = temp.getHead();
         /* Using SHA to get the commit file */
-        File inFile = Utils.join(COMMIT_DIR, sha);
-        Commit c = readObject(inFile, Commit.class);
+        Commit c = getCommitfromSHA(sha);
         return c;
     }
     public static void mergeBranch(String branchName) {
@@ -270,8 +286,7 @@ public class Repository {
         }
         /* Get given branch commit */
         String branchNamesha = branch.get(branchName);
-        File inFile = Utils.join(COMMIT_DIR, branchNamesha);
-        Commit branchCommit = readObject(inFile, Commit.class);
+        Commit branchCommit = getCommitfromSHA(branchNamesha);
         /* Get head commit */
         Commit head = getHeadCommit();
         /* Get split commit */
@@ -280,13 +295,11 @@ public class Repository {
         Commit help1 = head;
         branchLog.add(help);
         while (help.getFirstParent() != null) {
-            File inFile1 = Utils.join(COMMIT_DIR, help.getFirstParent());
-            help = readObject(inFile1, Commit.class);
+            help = getCommitfromSHA(help.getFirstParent());
             branchLog.add(help);
         }
         while (!branchLog.contains(help1) && help1.getFirstParent() != null) {
-            File inFile1 = Utils.join(COMMIT_DIR, help1.getFirstParent());
-            help1 = readObject(inFile1, Commit.class);
+            help1 = getCommitfromSHA(help1.getFirstParent());
         }
         Commit splitCommit = help1;
         /* If split commit equals to given branch commit, print error */
@@ -434,14 +447,30 @@ public class Repository {
         File outFile = Utils.join(CWD, fileName);
         writeContents(outFile, oldFile);
     }
-    /** checkout [commit id] -- [file name] */
-    public static void checkoutIDFileName(String commitId, String fileName) {
-        File inFile = Utils.join(COMMIT_DIR, commitId);
-        if (!inFile.exists()) {
+    public static Commit getCommitfromSHA(String commitId) {
+        String firstTwo = commitId.substring(0, 2);
+        String last = commitId.substring(2, commitId.length());
+        File commitDir = Utils.join(COMMIT_DIR, firstTwo);
+        if (!commitDir.exists()) {
             System.out.println("No commit with that id exists.");
             System.exit(0);
         }
-        Commit c = readObject(inFile, Commit.class);
+        File[] files = commitDir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.getName().substring(0, commitId.length() - 2).equals(last)) {
+                    Commit c = getCommitfromSHA(file.getName());
+                    return c;
+                }
+            }
+        }
+        System.out.println("No commit with that id exists.");
+        System.exit(0);
+        return null;
+    }
+    /** checkout [commit id] -- [file name] */
+    public static void checkoutIDFileName(String commitId, String fileName) {
+        Commit c = getCommitfromSHA(commitId);
         HashMap<String, String> bolbs = c.getBlobs();
         if (!bolbs.containsKey(fileName)) {
             System.out.println("File does not exist in that commit.");
@@ -477,8 +506,7 @@ public class Repository {
     }
     private static void replaceFilefromcommit(String commitID) {
         rmAllFile(CWD);
-        File inFile = Utils.join(COMMIT_DIR, commitID);
-        Commit c = readObject(inFile, Commit.class);
+        Commit c = getCommitfromSHA(commitID);
         HashMap<String, String> bolbs = c.getBlobs();
         for (String s : bolbs.keySet()) {
             File inFile1 = Utils.join(BOLB_DIR, bolbs.get(s));
@@ -500,11 +528,7 @@ public class Repository {
         writeObject(STAGE_PATH, stage);
     }
     public static void reset(String commitId) {
-        File inFile = Utils.join(COMMIT_DIR, commitId);
-        if (!inFile.exists()) {
-            System.out.println("No commit with that id exists.");
-            System.exit(0);
-        }
+        getCommitfromSHA(commitId);
         if (getUntrackFile().size() > 0) {
             System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
             System.exit(0);
@@ -612,8 +636,7 @@ public class Repository {
         /* Get tree Head commit SHA */
         String sha = temp.getHead();
         /* Using SHA to get the commit file */
-        File inFile = Utils.join(COMMIT_DIR, sha);
-        Commit c = readObject(inFile, Commit.class);
+        Commit c = getCommitfromSHA(sha);
         /* Get Head commit Blobs HashMap */
         HashMap<String, String> previousBolbs = c.getBlobs();
 
@@ -649,7 +672,13 @@ public class Repository {
         String s = sha1(getClassBytes(newCommit));
 
         /* Write commit */
-        File outFile = Utils.join(COMMIT_DIR, s);
+        String firstTwo = s.substring(0, 1);
+        String last = s.substring(2,39);
+        File commitDir = Utils.join(COMMIT_DIR, firstTwo);
+        if (!commitDir.exists()) {
+            commitDir.mkdir();
+        }
+        File outFile = Utils.join(COMMIT_DIR, firstTwo, last);
         writeObject(outFile, newCommit);
 
         /* Write to tree and stage */
@@ -711,7 +740,13 @@ public class Repository {
         String s = sha1(getClassBytes(firstCommit));
 
         /* Write commit */
-        File outFile = Utils.join(COMMIT_DIR, s);
+        String firstTwo = s.substring(0, 2);
+        String last = s.substring(2,40);
+        File commitDir = Utils.join(COMMIT_DIR, firstTwo);
+        if (!commitDir.exists()) {
+            commitDir.mkdir();
+        }
+        File outFile = Utils.join(COMMIT_DIR, firstTwo, last);
         writeObject(outFile, firstCommit);
 
         /* Write tree and stage */
