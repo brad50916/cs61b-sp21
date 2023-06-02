@@ -20,19 +20,21 @@ public class Commit implements Serializable {
      * variable is used. We've provided one example for `message`.
      */
 
-    /** The message of this Commit. */
+    /* The message of this Commit. */
     private String message;
     private String timestamp;
-    /** parent commit SHA */
+    /* parent commit SHA */
     private String firstParent;
     private String secondParent;
-    /** hashmap key is relative file path, value is its SHA */
+    /* hashmap key is relative file path, value is its SHA */
     private HashMap<String, String> bolbs;
 
-    /** For initial commit **/
+    /* For initial commit **/
     public Commit(String message) {
         this.message = message;
-        /**  Generate The (Unix) Epoch time for initial commit timestamp */
+        this.firstParent = null;
+        this.secondParent = null;
+        /*  Generate The (Unix) Epoch time for initial commit timestamp */
         Date currentDate = new Date(0);
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM d HH:mm:ss yyyy Z");
         String timestamp1 = dateFormat.format(currentDate);
@@ -43,6 +45,7 @@ public class Commit implements Serializable {
     public Commit(String message, String firstParent, HashMap<String, String> bolbs) {
         this.message = message;
         this.firstParent = firstParent;
+        this.secondParent = null;
         this.bolbs = bolbs;
         Date currentDate = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM d HH:mm:ss yyyy Z");
@@ -50,15 +53,15 @@ public class Commit implements Serializable {
         this.timestamp = timestamp1;
     }
 
-    public Commit(String message, String firstParent, String secondParent, HashMap<String, String> bolbs) {
+    public Commit(String message, String firstParent, String secondParent) {
         this.message = message;
         this.firstParent = firstParent;
         this.secondParent = secondParent;
-        this.bolbs = bolbs;
         Date currentDate = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM d HH:mm:ss yyyy Z");
         String timestamp1 = dateFormat.format(currentDate);
         this.timestamp = timestamp1;
+        this.bolbs = new HashMap<>();
     }
 
     public String getMessage() {
@@ -75,5 +78,8 @@ public class Commit implements Serializable {
     }
     public HashMap<String, String> getBlobs() {
         return bolbs;
+    }
+    public void addBlobs(HashMap<String, String> newBlobs) {
+        bolbs = newBlobs;
     }
 }

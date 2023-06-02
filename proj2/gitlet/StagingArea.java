@@ -18,9 +18,6 @@ public class StagingArea implements Serializable {
     public HashMap<String, String> getBlobs() {
         return blobs;
     }
-    public void putBlob(String path, String sha) {
-        blobs.put(path, sha);
-    }
     public void removeBlob(String path) {
         blobs.remove(path);
     }

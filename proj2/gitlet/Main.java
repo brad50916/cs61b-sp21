@@ -73,7 +73,8 @@ public class Main {
                 Repository.reset(args[1]);
                 break;
             case "merge":
-                // TODO
+                validateNumArgs("merge", args, 2);
+                Repository.mergeBranch(args[1]);
                 break;
             default:
                 throw new IllegalArgumentException("No command with that name exists.");

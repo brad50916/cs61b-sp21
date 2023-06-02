@@ -7,24 +7,26 @@ import java.util.Map;
 
 public class Tree implements Serializable {
     private String root;
-    private String curBranch;
-    /** HashMap's key is branch name, value is commit SHA */
+    private String curBranchname;
+    /* HashMap's key is branch name, value is commit SHA */
     private HashMap<String, String> branch;
+    /* head commit sha */
     private String head;
     private int size = 0;
     public Tree() {
         this.root = null;
         this.head = null;
-        curBranch = "master";
+        curBranchname = "master";
         this.branch = new HashMap<>();
+        this.branch.put(curBranchname, null);
     }
     public void put(String commit) {
         if (this.root == null) {
             this.root = commit;
-            this.branch.put(curBranch, root);
+            this.branch.put(curBranchname, root);
             this.head = root;
         } else {
-            this.branch.put(curBranch, commit);
+            this.branch.put(curBranchname, commit);
             this.head = commit;
         }
         size++;
@@ -39,7 +41,7 @@ public class Tree implements Serializable {
         return size;
     }
     public String getCurBranch() {
-        return curBranch;
+        return curBranchname;
     }
     public HashMap<String, String> getBranch() {
         return branch;
@@ -49,7 +51,7 @@ public class Tree implements Serializable {
             System.out.println("No such branch exists.");
             System.exit(0);
         }
-        this.curBranch = b;
+        this.curBranchname = b;
     }
     public void changeHead(String h) {
         this.head = h;

@@ -52,12 +52,12 @@ public class Repository {
     }
     /** Print log history for head commit */
     public static void log() {
-        /** Get tree */
+        /* Get tree */
         Tree temp = readObject(TREE_PATH, Tree.class);
-        /** Get Head commit */
+        /* Get Head commit */
         String sha = temp.getHead();
         File inFile = Utils.join(COMMIT_DIR, sha);
-        /** Get head's parent commit if it has parent */
+        /* Get head's parent commit if it has parent */
         String curSHA = sha;
         while (true) {
             Commit c = readObject(inFile, Commit.class);
@@ -207,16 +207,16 @@ public class Repository {
     }
 
     private static String getSHAfromfile(String fileName) {
-        /** Find file's path */
+        /* Find file's path */
         File f = Utils.join(CWD, fileName);
 
-        /** If the file does not exist, print error */
+        /* If the file does not exist, print error */
         if (!f.exists()) {
             System.out.println("File does not exist.");
             System.exit(0);
         }
 
-        /** Get file's SHA */
+        /* Get file's SHA */
         String path = f.getPath();
         String s = "";
         try {
@@ -229,14 +229,196 @@ public class Repository {
         return s;
     }
     private static Commit getHeadCommit() {
-        /** Get tree */
+        /* Get tree */
         Tree temp = readObject(TREE_PATH, Tree.class);
-        /** Get tree Head commit SHA */
+        /* Get tree Head commit SHA */
         String sha = temp.getHead();
-        /** Using SHA to get the commit file */
+        /* Using SHA to get the commit file */
         File inFile = Utils.join(COMMIT_DIR, sha);
         Commit c = readObject(inFile, Commit.class);
         return c;
+    }
+    public static void mergeBranch(String branchName) {
+        /* Record whether encountered a merge conflict. */
+        boolean changed = false;
+        /* get current stage Blobs and rmBlobs*/
+        StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
+        HashMap<String, String> Blobs = stage.getBlobs();
+        HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
+        /* If stage area have uncommitted blobs, print error */
+        if (Blobs.size() > 0 || rmBlobs.size() > 0) {
+            System.out.println("You have uncommitted changes.");
+            System.exit(0);
+        }
+        /* Get tree branch */
+        Tree temp = readObject(TREE_PATH, Tree.class);
+        HashMap<String, String> branch = temp.getBranch();
+        /* If given branch name does not exist, print error */
+        if (!branch.containsKey(branchName)) {
+            System.out.println("A branch with that name does not exist.");
+            System.exit(0);
+        }
+        /* If given branch name equals to current branch name, print error */
+        if (temp.getCurBranch().equals(branchName)) {
+            System.out.println("Cannot merge a branch with itself.");
+            System.exit(0);
+        }
+        /* If there is an untracked file, print error */
+        if (getUntrackFile().size() > 0) {
+            System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+            System.exit(0);
+        }
+        /* Get given branch commit */
+        String branchNamesha = branch.get(branchName);
+        File inFile = Utils.join(COMMIT_DIR, branchNamesha);
+        Commit branchCommit = readObject(inFile, Commit.class);
+        /* Get head commit */
+        Commit head = getHeadCommit();
+        /* Get split commit */
+        HashSet<Commit> branchLog = new HashSet<>();
+        Commit help = branchCommit;
+        Commit help1 = head;
+        branchLog.add(help);
+        while (help.getFirstParent() != null) {
+            File inFile1 = Utils.join(COMMIT_DIR, help.getFirstParent());
+            help = readObject(inFile1, Commit.class);
+            branchLog.add(help);
+        }
+        while (!branchLog.contains(help1) && help1.getFirstParent() != null) {
+            File inFile1 = Utils.join(COMMIT_DIR, help1.getFirstParent());
+            help1 = readObject(inFile1, Commit.class);
+        }
+        Commit splitCommit = help1;
+        /* If split commit equals to given branch commit, print error */
+        if (splitCommit.equals(branchCommit)) {
+            System.out.println("Given branch is an ancestor of the current branch.");
+            System.exit(0);
+        }
+        /* If the split point is the current branch, checkout given branch */
+        if (splitCommit.equals(head)) {
+            checkoutBranch(branchName);
+            System.out.println("Current branch fast-forwarded.");
+            System.exit(0);
+        }
+        /* Create new stage area */
+        StagingArea newStage = new StagingArea();
+        /* Create new commit */
+        String message = "Merged " + branchName + " into " + temp.getCurBranch();
+        Commit newCommit = new Commit(message, temp.getHead(), branchNamesha);
+        HashMap<String, String> remainBlobs = newCommit.getBlobs();
+
+        /* Get new stage area blob and rmblob */
+        HashMap<String, String> stageBlobs = newStage.getBlobs();
+        HashSet<String> stagermBlobs = newStage.getRmBolbsBlobs();
+        /* Get split commit blobs */
+        HashMap<String, String> splitBlobs = splitCommit.getBlobs();
+        /* Get head commit blobs */
+        HashMap<String, String> headBlobs = head.getBlobs();
+        /* Get branch commit blobs */
+        HashMap<String, String> branchBolbs = branchCommit.getBlobs();
+        /* Iterate split commit blobs */
+        for (String s : splitBlobs.keySet()) {
+            if (!headBlobs.containsKey(s) && !branchBolbs.containsKey(s)) {
+                continue;
+            } else if (headBlobs.containsKey(s) && !branchBolbs.containsKey(s)) {
+                stagermBlobs.add(s);
+            } else if (!headBlobs.containsKey(s) && branchBolbs.containsKey(s)) {
+                continue;
+            } else if (headBlobs.get(s).equals(splitBlobs.get(s)) && branchBolbs.get(s).equals(splitBlobs.get(s))) {
+                remainBlobs.put(s, headBlobs.get(s));
+            } else if (headBlobs.get(s).equals(splitBlobs.get(s)) && !branchBolbs.get(s).equals(splitBlobs.get(s))) {
+                stageBlobs.put(s, branchBolbs.get(s));
+            } else if (!headBlobs.get(s).equals(splitBlobs.get(s)) && branchBolbs.get(s).equals(splitBlobs.get(s))) {
+                remainBlobs.put(s, headBlobs.get(s));
+            } else if (!headBlobs.get(s).equals(splitBlobs.get(s)) && !branchBolbs.get(s).equals(splitBlobs.get(s))) {
+                if (headBlobs.get(s).equals(branchBolbs.get(s))) {
+                    remainBlobs.put(s, headBlobs.get(s));
+                } else {
+                    File inFileHead = Utils.join(BOLB_DIR, headBlobs.get(s));
+                    String stringHead = readContentsAsString(inFileHead);
+                    File inFileBranch = Utils.join(BOLB_DIR, branchBolbs.get(s));
+                    String stringBranch = readContentsAsString(inFileBranch);
+                    String top = "<<<<<<< HEAD ";
+                    String middle = "======= ";
+                    String bottom = ">>>>>>> ";
+                    String finalContent = top + stringHead + middle + stringBranch + bottom;
+                    /* Replace file in working directory */
+                    File outFile = Utils.join(CWD, s);
+                    writeContents(outFile, finalContent);
+                    String fileSHA = getSHAfromfile(s);
+                    stageBlobs.put(s, fileSHA);
+                    changed = true;
+                }
+            }
+        }
+        /* Iterate branch commit blobs which split commit and head commit doesn't have */
+        for (String s : branchBolbs.keySet()) {
+            if (!splitBlobs.containsKey(s) && !headBlobs.containsKey(s)) {
+                stageBlobs.put(s, branchBolbs.get(s));
+            }
+        }
+        /* Iterate head commit blobs which split commit and branch commit doesn't have */
+        for (String s : headBlobs.keySet()) {
+            if (!splitBlobs.containsKey(s) && !branchBolbs.containsKey(s)) {
+                remainBlobs.put(s, headBlobs.get(s));
+            }
+        }
+        /* Iterate head commit blobs which branch commit both have but split commit doesn't */
+        for (String s : headBlobs.keySet()) {
+            if (!splitBlobs.containsKey(s) && branchBolbs.containsKey(s)) {
+                /* If the blob in head commit and branch commit are equal, add to remain blobs */
+                if (headBlobs.get(s).equals(branchBolbs.get(s))) {
+                    remainBlobs.put(s, headBlobs.get(s));
+                } else {
+                    /* If there is conflict, add text to the file */
+                    File inFileHead = Utils.join(BOLB_DIR, headBlobs.get(s));
+                    String stringHead = readContentsAsString(inFileHead);
+                    File inFileBranch = Utils.join(BOLB_DIR, branchBolbs.get(s));
+                    String stringBranch = readContentsAsString(inFileBranch);
+                    String top = "<<<<<<< HEAD";
+                    String middle = "=======";
+                    String bottom = ">>>>>>>";
+                    String finalContent = top + stringHead + middle + stringBranch + bottom;
+                    File outFile = Utils.join(CWD, s);
+                    writeContents(outFile, finalContent);
+                    String fileSHA = getSHAfromfile(s);
+                    stageBlobs.put(s, fileSHA);
+                    changed = true;
+                }
+            }
+        }
+        /* Iterate through the staging area Blobs HashMap,
+         *  add files to new Blobs HashMap except for those in remove Blobs HashSet
+         */
+        for (String key: stageBlobs.keySet()) {
+            remainBlobs.put(key, stageBlobs.get(key));
+        }
+        /* Creating Blobs */
+        for (String key: remainBlobs.keySet()) {
+            File f = Utils.join(CWD, key);
+            byte[] filetoByte = readContents(f);
+            File outFile = Utils.join(BOLB_DIR, remainBlobs.get(key));
+            writeContents(outFile, filetoByte);
+        }
+
+        /* add blobs to new commit */
+        newCommit.addBlobs(remainBlobs);
+        String newCommitSHA = sha1(getClassBytes(newCommit));
+        /* Write commit */
+        File outFile = Utils.join(COMMIT_DIR, newCommitSHA);
+        writeObject(outFile, newCommit);
+
+        /* Write to tree and stage */
+        temp.put(newCommitSHA);
+        branch.put(branchName, newCommitSHA);
+        writeObject(TREE_PATH, temp);
+        stage = new StagingArea();
+        writeObject(STAGE_PATH, stage);
+        /* If there is a merge conflict, print message */
+        if (changed) {
+            System.out.println("Encountered a merge conflict.");
+        }
+        replaceFilefromcommit(newCommitSHA);
     }
     /** checkout -- [file name] */
     public static void checkoutFileName(String fileName) {
@@ -290,6 +472,7 @@ public class Repository {
         String commitSHA = branch.get(branchName);
         replaceFilefromcommit(commitSHA);
         temp.changeBranch(branchName);
+        temp.changeHead(commitSHA);
         writeObject(TREE_PATH, temp);
     }
     private static void replaceFilefromcommit(String commitID) {
@@ -372,18 +555,18 @@ public class Repository {
     public static void addFile(String fileName) {
         String fileSHA = getSHAfromfile(fileName);
 
-        /** Load tree */
+        /* Load tree */
         Tree temp = readObject(TREE_PATH, Tree.class);
 
-        /** If main not equal to root, find whether the file has been changed */
+        /* If main not equal to root, find whether the file has been changed */
         if (temp.getSize() != 1) {
-            /** Get head commit */
+            /* Get head commit */
             Commit c = getHeadCommit();
 
-            /** Get the commits blobs */
+            /* Get the commits blobs */
             HashMap<String, String> h = c.getBlobs();
 
-            /** Check the corresponding SHA is equal or not compared to previous commit
+            /* Check the corresponding SHA is equal or not compared to previous commit
              *  If is equal, remove the file from the stage.
              */
             if (h.containsKey(fileName) && fileSHA.equals(h.get(fileName))) {
@@ -398,7 +581,7 @@ public class Repository {
                 return;
             }
         }
-        /** Find whether the file has been changed to previously add version */
+        /* Find whether the file has been changed to previously add version */
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
         HashMap<String, String> blobs = stage.getBlobs();
 
@@ -407,37 +590,37 @@ public class Repository {
             return;
         }
 
-        /** Add the file to staging area */
-        stage.putBlob(fileName, fileSHA);
+        /* Add the file to staging area */
+        blobs.put(fileName, fileSHA);
         writeObject(STAGE_PATH, stage);
     }
     /** Creating commit */
     public static void commitBolb(String message) {
-        /** Get staging area */
+        /* Get staging area */
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
-        /** Get staging area Blobs HashMap */
+        /* Get staging area Blobs HashMap */
         HashMap<String, String> stageBlobs = stage.getBlobs();
         HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
-        /** If there is no file in stage area, return */
+        /* If there is no file in stage area, return */
         if (stageBlobs.size() == 0 && rmBlobs.size() == 0) {
             System.out.println("No changes added to the commit.");
             return;
         }
 
-        /** Get tree */
+        /* Get tree */
         Tree temp = readObject(TREE_PATH, Tree.class);
-        /** Get tree Head commit SHA */
+        /* Get tree Head commit SHA */
         String sha = temp.getHead();
-        /** Using SHA to get the commit file */
+        /* Using SHA to get the commit file */
         File inFile = Utils.join(COMMIT_DIR, sha);
         Commit c = readObject(inFile, Commit.class);
-        /** Get Head commit Blobs HashMap */
+        /* Get Head commit Blobs HashMap */
         HashMap<String, String> previousBolbs = c.getBlobs();
 
-        /** Creating new Blobs HashMap */
+        /* Creating new Blobs HashMap */
         HashMap<String, String> curBolbs = new HashMap<>();
 
-        /** Iterate through the Head commit Blobs HashMap,
+        /* Iterate through the Head commit Blobs HashMap,
          *  add files to new Blobs HashMap except for those in remove Blobs HashSet
          */
         for (String key: previousBolbs.keySet()) {
@@ -445,7 +628,7 @@ public class Repository {
                 curBolbs.put(key, previousBolbs.get(key));
             }
         }
-        /** Iterate through the staging area Blobs HashMap,
+        /* Iterate through the staging area Blobs HashMap,
          *  add files to new Blobs HashMap except for those in remove Blobs HashSet
          */
         for (String key: stageBlobs.keySet()) {
@@ -453,7 +636,7 @@ public class Repository {
                 curBolbs.put(key, stageBlobs.get(key));
             }
         }
-        /** Creating Blobs */
+        /* Creating Blobs */
         for (String key: curBolbs.keySet()) {
             File f = Utils.join(CWD, key);
             byte[] filetoByte = readContents(f);
@@ -461,15 +644,15 @@ public class Repository {
             writeContents(outFile, filetoByte);
         }
 
-        /** Creating commit */
+        /* Creating commit */
         Commit newCommit = new Commit(message, sha, curBolbs);
         String s = sha1(getClassBytes(newCommit));
 
-        /** Write commit */
+        /* Write commit */
         File outFile = Utils.join(COMMIT_DIR, s);
         writeObject(outFile, newCommit);
 
-        /** Write to tree and stage */
+        /* Write to tree and stage */
         temp.put(s);
         writeObject(TREE_PATH, temp);
         stage = new StagingArea();
@@ -478,11 +661,11 @@ public class Repository {
     public static void rmFile(String fileName) {
         boolean changed = false;
 
-        /** Get staging area */
+        /* Get staging area */
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
-        /** Get staging area Blobs HashMap */
+        /* Get staging area Blobs HashMap */
         HashMap<String, String> stageBlobs = stage.getBlobs();
-        /** If file exist in staging area, remove it */
+        /* If file exist in staging area, remove it */
         if (stageBlobs.containsKey(fileName)) {
             System.out.println("Remove file from staging area");
             stage.removeBlob(fileName);
@@ -490,16 +673,16 @@ public class Repository {
             changed = true;
         }
 
-        /** Get Head commit Blobs HashMap */
+        /* Get Head commit Blobs HashMap */
         Commit c = getHeadCommit();
         HashMap<String, String> headBlobs = c.getBlobs();
-        /** If file exist in current commit, remove it */
+        /* If file exist in current commit, remove it */
         if (headBlobs.containsKey(fileName)) {
             System.out.println("Remove file from the working directory");
-            /** Stage it for removal */
+            /* Stage it for removal */
             stage.addtormBlob(fileName);
             writeObject(STAGE_PATH, stage);
-            /** Remove the file from the working directory  */
+            /* Remove the file from the working directory  */
             File f = Utils.join(CWD, fileName);
             if (!restrictedDelete(f)) {
                 System.out.println("Fail to delete the file");
@@ -513,25 +696,25 @@ public class Repository {
     }
     /** Initialize gitlet */
     public static void initialCommit() {
-        /** Setup Persistence, if have been set up, just return */
+        /* Setup Persistence, if have been set up, just return */
         if (!setupPersistence()) {
             return;
         }
 
-        /** Create instance variable of tree and stage*/
+        /* Create instance variable of tree and stage*/
         Tree root = new Tree();
         StagingArea stage = new StagingArea();
 
-        /** Add initial commit */
+        /* Add initial commit */
         Commit firstCommit = new Commit("initial commit");
-        /** Get first commit SHA */
+        /* Get first commit SHA */
         String s = sha1(getClassBytes(firstCommit));
 
-        /** Write commit */
+        /* Write commit */
         File outFile = Utils.join(COMMIT_DIR, s);
         writeObject(outFile, firstCommit);
 
-        /** Write tree and stage */
+        /* Write tree and stage */
         root.put(s);
         writeObject(TREE_PATH, root);
         writeObject(STAGE_PATH, stage);
