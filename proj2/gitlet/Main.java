@@ -13,6 +13,8 @@ public class Main {
         }
         String firstArg = args[0];
         switch (firstArg) {
+            case "test":
+                break;
             case "init":
                 validateNumArgs("init", args, 1);
                 Repository.initialCommit();

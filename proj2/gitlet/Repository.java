@@ -179,6 +179,7 @@ public class Repository {
         HashMap<String, String> blobs = stage.getBlobs();
         recordFile = new ArrayList<>();
         traverseDirectory(CWD);
+        System.out.println(recordFile);
         Commit c = getHeadCommit();
         for (String s : recordFile) {
             if (!c.getBlobs().containsKey(s) && !blobs.containsKey(s)) {
@@ -459,7 +460,8 @@ public class Repository {
         if (files != null) {
             for (File file : files) {
                 if (file.getName().substring(0, commitId.length() - 2).equals(last)) {
-                    Commit c = getCommitfromSHA(file.getName());
+                    File infile = Utils.join(commitDir, file.getName());
+                    Commit c = readObject(infile, Commit.class);
                     return c;
                 }
             }
@@ -672,8 +674,8 @@ public class Repository {
         String s = sha1(getClassBytes(newCommit));
 
         /* Write commit */
-        String firstTwo = s.substring(0, 1);
-        String last = s.substring(2,39);
+        String firstTwo = s.substring(0, 2);
+        String last = s.substring(2,40);
         File commitDir = Utils.join(COMMIT_DIR, firstTwo);
         if (!commitDir.exists()) {
             commitDir.mkdir();
