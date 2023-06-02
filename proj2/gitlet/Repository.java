@@ -179,7 +179,6 @@ public class Repository {
         HashMap<String, String> blobs = stage.getBlobs();
         recordFile = new ArrayList<>();
         traverseDirectory(CWD);
-        System.out.println(recordFile);
         Commit c = getHeadCommit();
         for (String s : recordFile) {
             if (!c.getBlobs().containsKey(s) && !blobs.containsKey(s)) {
