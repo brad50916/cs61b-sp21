@@ -314,7 +314,7 @@ public class Repository {
             System.exit(0);
         }
         /* If the split point is the current branch, checkout given branch */
-        if (splitCommitsha.equals(headCommitsha)) {
+        if (splitCommitsha.equals(temp.getHead())) {
             checkoutBranch(branchName);
             System.out.println("Current branch fast-forwarded.");
             System.exit(0);
@@ -757,7 +757,6 @@ public class Repository {
     }
     public static void rmFile(String fileName) {
         boolean changed = false;
-
         /* Get staging area */
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
         /* Get staging area Blobs HashMap */
@@ -769,7 +768,6 @@ public class Repository {
             writeObject(STAGE_PATH, stage);
             changed = true;
         }
-
         /* Get Head commit Blobs HashMap */
         Commit c = getHeadCommit();
         HashMap<String, String> headBlobs = c.getBlobs();
@@ -784,7 +782,6 @@ public class Repository {
             restrictedDelete(f);
             changed = true;
         }
-
         if (!changed) {
             System.out.println("No reason to remove the file.");
         }
