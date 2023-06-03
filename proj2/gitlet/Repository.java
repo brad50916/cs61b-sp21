@@ -339,9 +339,51 @@ public class Repository {
             if (!headBlobs.containsKey(s) && !branchBolbs.containsKey(s)) {
                 continue;
             } else if (headBlobs.containsKey(s) && !branchBolbs.containsKey(s)) {
-                stagermBlobs.add(s);
+                if (!headBlobs.get(s).equals(splitBlobs.get(s))) {
+                    File inFileHead = Utils.join(BOLB_DIR, headBlobs.get(s));
+                    String stringHead = readContentsAsString(inFileHead);
+                    String stringBranch = "";
+                    String top = "<<<<<<< HEAD";
+                    String middle = "=======";
+                    String bottom = ">>>>>>>";
+                    String finalContent = top + System.lineSeparator() + stringHead + middle + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
+                    /* Replace file in working directory */
+                    File outFile = Utils.join(CWD, s);
+                    writeContents(outFile, finalContent);
+                    String fileSHA = getSHAfromfile(s);
+                    /* Save blob */
+                    File inFile1 = Utils.join(CWD, s);
+                    byte[] filetoByte = readContents(inFile1);
+                    File outFile1 = Utils.join(BOLB_DIR, fileSHA);
+                    writeContents(outFile1, filetoByte);
+
+                    stageBlobs.put(s, fileSHA);
+                    changed = true;
+                } else {
+                    stagermBlobs.add(s);
+                }
             } else if (!headBlobs.containsKey(s) && branchBolbs.containsKey(s)) {
-                continue;
+                if (!branchBolbs.get(s).equals(splitBlobs.get(s))) {
+                    File inFileHead = Utils.join(BOLB_DIR, branchBolbs.get(s));
+                    String stringHead = readContentsAsString(inFileHead);
+                    String stringBranch = "";
+                    String top = "<<<<<<< HEAD";
+                    String middle = "=======";
+                    String bottom = ">>>>>>>";
+                    String finalContent = top + System.lineSeparator() + stringHead + middle + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
+                    /* Replace file in working directory */
+                    File outFile = Utils.join(CWD, s);
+                    writeContents(outFile, finalContent);
+                    String fileSHA = getSHAfromfile(s);
+                    /* Save blob */
+                    File inFile1 = Utils.join(CWD, s);
+                    byte[] filetoByte = readContents(inFile1);
+                    File outFile1 = Utils.join(BOLB_DIR, fileSHA);
+                    writeContents(outFile1, filetoByte);
+
+                    stageBlobs.put(s, fileSHA);
+                    changed = true;
+                }
             } else if (headBlobs.get(s).equals(splitBlobs.get(s)) && branchBolbs.get(s).equals(splitBlobs.get(s))) {
                 remainBlobs.put(s, headBlobs.get(s));
             } else if (headBlobs.get(s).equals(splitBlobs.get(s)) && !branchBolbs.get(s).equals(splitBlobs.get(s))) {
@@ -356,10 +398,10 @@ public class Repository {
                     String stringHead = readContentsAsString(inFileHead);
                     File inFileBranch = Utils.join(BOLB_DIR, branchBolbs.get(s));
                     String stringBranch = readContentsAsString(inFileBranch);
-                    String top = "<<<<<<< HEAD ";
-                    String middle = "======= ";
-                    String bottom = ">>>>>>> ";
-                    String finalContent = top + stringHead + middle + stringBranch + bottom;
+                    String top = "<<<<<<< HEAD";
+                    String middle = "=======";
+                    String bottom = ">>>>>>>";
+                    String finalContent = top + System.lineSeparator() + stringHead + middle + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
                     /* Replace file in working directory */
                     File outFile = Utils.join(CWD, s);
                     writeContents(outFile, finalContent);
@@ -387,7 +429,7 @@ public class Repository {
                 remainBlobs.put(s, headBlobs.get(s));
             }
         }
-        /* Iterate head commit blobs which branch commit both have but split commit doesn't */
+        /* Iterate head commit blobs which branch commit and head commit both have but split commit doesn't */
         for (String s : headBlobs.keySet()) {
             if (!splitBlobs.containsKey(s) && branchBolbs.containsKey(s)) {
                 /* If the blob in head commit and branch commit are equal, add to remain blobs */
@@ -402,7 +444,7 @@ public class Repository {
                     String top = "<<<<<<< HEAD";
                     String middle = "=======";
                     String bottom = ">>>>>>>";
-                    String finalContent = top + stringHead + middle + stringBranch + bottom;
+                    String finalContent = top + System.lineSeparator() + stringHead + middle + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
 
                     /* Replace file in working directory */
                     File outFile = Utils.join(CWD, s);
