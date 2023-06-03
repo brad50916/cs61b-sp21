@@ -1,6 +1,4 @@
 package gitlet;
-import afu.org.checkerframework.checker.igj.qual.I;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -349,7 +347,7 @@ public class Repository {
         Commit head = getHeadCommit();
         /* Get split commit */
         String splitCommitsha = getSplitCommitsha(headCommitsha, branchCommitsha);
-
+        Commit splitCommit = getCommitfromSHA(splitCommitsha);
         /* If split commit equals to given branch commit, print error */
         if (splitCommitsha.equals(branchCommitsha)) {
             System.out.println("Given branch is an ancestor of the current branch.");
