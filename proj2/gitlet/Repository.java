@@ -414,8 +414,8 @@ public class Repository {
             } else if (!headBlobs.containsKey(s) && branchBolbs.containsKey(s)) {
                 if (!branchBolbs.get(s).equals(splitBlobs.get(s))) {
                     File inFileHead = Utils.join(BOLB_DIR, branchBolbs.get(s));
-                    String stringHead = readContentsAsString(inFileHead);
-                    String stringBranch = "";
+                    String stringHead = "";
+                    String stringBranch = readContentsAsString(inFileHead);
                     String top = "<<<<<<< HEAD";
                     String middle = "=======";
                     String bottom = ">>>>>>>";
