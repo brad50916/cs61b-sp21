@@ -276,7 +276,7 @@ public class Repository {
                     headQ.add(tempc.getFirstParent());
                 }
                 if (tempc.getSecondParent() != null) {
-                    headQ.add(tempc.getFirstParent());
+                    headQ.add(tempc.getSecondParent());
                 }
             }
             depth++;
@@ -294,11 +294,13 @@ public class Repository {
                     branchQ.add(tempc.getFirstParent());
                 }
                 if (tempc.getSecondParent() != null) {
-                    branchQ.add(tempc.getFirstParent());
+                    branchQ.add(tempc.getSecondParent());
                 }
             }
             depth++;
         }
+//        System.out.println(headLog);
+//        System.out.println(branchLog);
         String minKey = null;
         int minValue = Integer.MAX_VALUE;
         for (String s : headLog.keySet()) {
