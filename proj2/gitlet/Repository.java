@@ -725,7 +725,10 @@ public class Repository {
 //                    System.out.println("Remove the file from commit");
                     stage.removeBlob(fileName);
                     writeObject(STAGE_PATH, stage);
-                    return;
+                }
+                if (stage.getRmBolbsBlobs().contains(fileName)) {
+                    stage.getRmBolbsBlobs().remove(fileName);
+                    writeObject(STAGE_PATH, stage);
                 }
                 return;
             }
