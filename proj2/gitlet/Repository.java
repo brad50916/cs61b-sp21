@@ -307,13 +307,14 @@ public class Repository {
             help1 = getCommitfromSHA(help1.getFirstParent());
         }
         Commit splitCommit = help1;
+        String splitCommitsha = headCommitsha;
         /* If split commit equals to given branch commit, print error */
-        if (splitCommit.equals(branchCommit)) {
+        if (splitCommitsha.equals(branchCommitsha)) {
             System.out.println("Given branch is an ancestor of the current branch.");
             System.exit(0);
         }
         /* If the split point is the current branch, checkout given branch */
-        if (splitCommit.equals(head)) {
+        if (splitCommitsha.equals(headCommitsha)) {
             checkoutBranch(branchName);
             System.out.println("Current branch fast-forwarded.");
             System.exit(0);
