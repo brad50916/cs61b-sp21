@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import static gitlet.Utils.*;
 
 /** Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class
+ *  It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
  *  @author Bard
@@ -29,14 +29,16 @@ public class Repository {
     public static final File TREE_PATH = join(CWD, ".gitlet", "tree");
     public static final File STAGE_PATH = join(CWD, ".gitlet", "stage");
     private static String[] excludedPrefixDir = new String[]{".", "gitlet", "testing"};
-    private static String[] excludedPrefixFile = new String[]{".DS_Store", "Makefile", "pom.xml", "gitlet-design.md"};
+    private static String[] excludedPrefixFile = new String[]{".DS_Store", "Makefile",
+            "pom.xml", "gitlet-design.md"};
     private static List<String> recordFile;
 
 
     public static boolean setupPersistence() {
         /** if file has been set up before, print error message and return */
         if (GITLET_DIR.exists() && COMMIT_DIR.exists() && BOLB_DIR.exists() && TREE_PATH.exists()) {
-            System.out.println("A Gitlet version-control system already exists in the current directory.");
+            System.out.println("A Gitlet version-control system " +
+                    "already exists in the current directory.");
             return false;
         }
         if (!GITLET_DIR.exists()) {
@@ -314,10 +316,10 @@ public class Repository {
         boolean changed = false;
         /* get current stage Blobs and rmBlobs*/
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
-        HashMap<String, String> Blobs = stage.getBlobs();
+        HashMap<String, String> blobs = stage.getBlobs();
         HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
         /* If stage area have uncommitted blobs, print error */
-        if (Blobs.size() > 0 || rmBlobs.size() > 0) {
+        if (blobs.size() > 0 || rmBlobs.size() > 0) {
             System.out.println("You have uncommitted changes.");
             System.exit(0);
         }
@@ -336,7 +338,8 @@ public class Repository {
         }
         /* If there is an untracked file, print error */
         if (getUntrackFile().size() > 0) {
-            System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+            System.out.println("There is an untracked file in the way; " +
+                    "delete it, or add and commit it first.");
             System.exit(0);
         }
         /* Get given branch commit */
@@ -348,6 +351,7 @@ public class Repository {
         /* Get split commit */
         String splitCommitsha = getSplitCommitsha(headCommitsha, branchCommitsha);
         Commit splitCommit = getCommitfromSHA(splitCommitsha);
+//        System.out.println(splitCommit.getMessage());
         /* If split commit equals to given branch commit, print error */
         if (splitCommitsha.equals(branchCommitsha)) {
             System.out.println("Given branch is an ancestor of the current branch.");
@@ -387,7 +391,8 @@ public class Repository {
                     String top = "<<<<<<< HEAD";
                     String middle = "=======";
                     String bottom = ">>>>>>>";
-                    String finalContent = top + System.lineSeparator() + stringHead + middle + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
+                    String finalContent = top + System.lineSeparator() + stringHead + middle
+                            + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
                     /* Replace file in working directory */
                     File outFile = Utils.join(CWD, s);
                     writeContents(outFile, finalContent);
@@ -411,7 +416,8 @@ public class Repository {
                     String top = "<<<<<<< HEAD";
                     String middle = "=======";
                     String bottom = ">>>>>>>";
-                    String finalContent = top + System.lineSeparator() + stringHead + middle + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
+                    String finalContent = top + System.lineSeparator() + stringHead + middle
+                            + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
                     /* Replace file in working directory */
                     File outFile = Utils.join(CWD, s);
                     writeContents(outFile, finalContent);
@@ -425,13 +431,17 @@ public class Repository {
                     stageBlobs.put(s, fileSHA);
                     changed = true;
                 }
-            } else if (headBlobs.get(s).equals(splitBlobs.get(s)) && branchBolbs.get(s).equals(splitBlobs.get(s))) {
+            } else if (headBlobs.get(s).equals(splitBlobs.get(s))
+                    && branchBolbs.get(s).equals(splitBlobs.get(s))) {
                 remainBlobs.put(s, headBlobs.get(s));
-            } else if (headBlobs.get(s).equals(splitBlobs.get(s)) && !branchBolbs.get(s).equals(splitBlobs.get(s))) {
+            } else if (headBlobs.get(s).equals(splitBlobs.get(s))
+                    && !branchBolbs.get(s).equals(splitBlobs.get(s))) {
                 stageBlobs.put(s, branchBolbs.get(s));
-            } else if (!headBlobs.get(s).equals(splitBlobs.get(s)) && branchBolbs.get(s).equals(splitBlobs.get(s))) {
+            } else if (!headBlobs.get(s).equals(splitBlobs.get(s))
+                    && branchBolbs.get(s).equals(splitBlobs.get(s))) {
                 remainBlobs.put(s, headBlobs.get(s));
-            } else if (!headBlobs.get(s).equals(splitBlobs.get(s)) && !branchBolbs.get(s).equals(splitBlobs.get(s))) {
+            } else if (!headBlobs.get(s).equals(splitBlobs.get(s))
+                    && !branchBolbs.get(s).equals(splitBlobs.get(s))) {
                 if (headBlobs.get(s).equals(branchBolbs.get(s))) {
                     remainBlobs.put(s, headBlobs.get(s));
                 } else {
@@ -442,7 +452,8 @@ public class Repository {
                     String top = "<<<<<<< HEAD";
                     String middle = "=======";
                     String bottom = ">>>>>>>";
-                    String finalContent = top + System.lineSeparator() + stringHead + middle + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
+                    String finalContent = top + System.lineSeparator() + stringHead + middle
+                            + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
                     /* Replace file in working directory */
                     File outFile = Utils.join(CWD, s);
                     writeContents(outFile, finalContent);
@@ -470,7 +481,8 @@ public class Repository {
                 remainBlobs.put(s, headBlobs.get(s));
             }
         }
-        /* Iterate head commit blobs which branch commit and head commit both have but split commit doesn't */
+        /* Iterate head commit blobs which branch commit
+        and head commit both have but split commit doesn't */
         for (String s : headBlobs.keySet()) {
             if (!splitBlobs.containsKey(s) && branchBolbs.containsKey(s)) {
                 /* If the blob in head commit and branch commit are equal, add to remain blobs */
@@ -485,7 +497,8 @@ public class Repository {
                     String top = "<<<<<<< HEAD";
                     String middle = "=======";
                     String bottom = ">>>>>>>";
-                    String finalContent = top + System.lineSeparator() + stringHead + middle + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
+                    String finalContent = top + System.lineSeparator() + stringHead + middle
+                            + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
 
                     /* Replace file in working directory */
                     File outFile = Utils.join(CWD, s);
@@ -601,7 +614,8 @@ public class Repository {
             System.exit(0);
         }
         if (getUntrackFile().size() > 0) {
-            System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+            System.out.println("There is an untracked file in the way; " +
+                    "delete it, or add and commit it first.");
             System.exit(0);
         }
         String commitSHA = branch.get(branchName);
@@ -636,7 +650,8 @@ public class Repository {
     public static void reset(String commitId) {
         getCommitfromSHA(commitId);
         if (getUntrackFile().size() > 0) {
-            System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+            System.out.println("There is an untracked file in the way; " +
+                    "delete it, or add and commit it first.");
             System.exit(0);
         }
         replaceFilefromcommit(commitId);
@@ -728,6 +743,10 @@ public class Repository {
     }
     /** Creating commit */
     public static void commitBolb(String message) {
+        if (message.length() == 0) {
+            System.out.println("Please enter a commit message.");
+            return;
+        }
         /* Get staging area */
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
         /* Get staging area Blobs HashMap */
@@ -781,7 +800,7 @@ public class Repository {
 
         /* Write commit */
         String firstTwo = s.substring(0, 2);
-        String last = s.substring(2,40);
+        String last = s.substring(2, 40);
         File commitDir = Utils.join(COMMIT_DIR, firstTwo);
         if (!commitDir.exists()) {
             commitDir.mkdir();
@@ -844,7 +863,7 @@ public class Repository {
 
         /* Write commit */
         String firstTwo = s.substring(0, 2);
-        String last = s.substring(2,40);
+        String last = s.substring(2, 40);
         File commitDir = Utils.join(COMMIT_DIR, firstTwo);
         if (!commitDir.exists()) {
             commitDir.mkdir();

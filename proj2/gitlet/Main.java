@@ -63,8 +63,8 @@ public class Main {
                     }
                     Repository.checkoutIDFileName(args[1], args[3]);
                 } else {
-                    throw new RuntimeException(
-                            String.format("Invalid command for checkout."));
+                    System.out.println("Incorrect operands.");
+                    System.exit(0);
                 }
                 break;
             case "branch":

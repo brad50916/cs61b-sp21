@@ -3,12 +3,12 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.text.SimpleDateFormat;
-// TODO: any imports you need here
+// any imports you need here
 
-// TODO: You'll likely use this in this class
+// You'll likely use this in this class
 
 /** Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
+ *  It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
  *  @author Bard
