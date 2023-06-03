@@ -29,16 +29,16 @@ public class Repository {
     public static final File TREE_PATH = join(CWD, ".gitlet", "tree");
     public static final File STAGE_PATH = join(CWD, ".gitlet", "stage");
     private static String[] excludedPrefixDir = new String[]{".", "gitlet", "testing"};
-    private static String[] excludedPrefixFile = new String[]{".DS_Store", "Makefile",
-            "pom.xml", "gitlet-design.md"};
+    private static String[] excludedPrefixFile = new String[]{".DS_Store", "Makefile"
+            , "pom.xml", "gitlet-design.md"};
     private static List<String> recordFile;
 
 
     public static boolean setupPersistence() {
         /** if file has been set up before, print error message and return */
         if (GITLET_DIR.exists() && COMMIT_DIR.exists() && BOLB_DIR.exists() && TREE_PATH.exists()) {
-            System.out.println("A Gitlet version-control system " +
-                    "already exists in the current directory.");
+            System.out.println("A Gitlet version-control system "
+                    + "already exists in the current directory.");
             return false;
         }
         if (!GITLET_DIR.exists()) {
@@ -340,8 +340,8 @@ public class Repository {
         }
         /* If there is an untracked file, print error */
         if (getUntrackFile().size() > 0) {
-            System.out.println("There is an untracked file in the way; " +
-                    "delete it, or add and commit it first.");
+            System.out.println("There is an untracked file in the way; "
+                    + "delete it, or add and commit it first.");
             System.exit(0);
         }
         /* Get given branch commit */
@@ -394,7 +394,8 @@ public class Repository {
                     String middle = "=======";
                     String bottom = ">>>>>>>";
                     String finalContent = top + System.lineSeparator() + stringHead + middle
-                            + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
+                            + System.lineSeparator() + stringBranch
+                            + bottom + System.lineSeparator();
                     /* Replace file in working directory */
                     File outFile = Utils.join(CWD, s);
                     writeContents(outFile, finalContent);
@@ -419,7 +420,8 @@ public class Repository {
                     String middle = "=======";
                     String bottom = ">>>>>>>";
                     String finalContent = top + System.lineSeparator() + stringHead + middle
-                            + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
+                            + System.lineSeparator() + stringBranch
+                            + bottom + System.lineSeparator();
                     /* Replace file in working directory */
                     File outFile = Utils.join(CWD, s);
                     writeContents(outFile, finalContent);
@@ -455,7 +457,8 @@ public class Repository {
                     String middle = "=======";
                     String bottom = ">>>>>>>";
                     String finalContent = top + System.lineSeparator() + stringHead + middle
-                            + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
+                            + System.lineSeparator() + stringBranch
+                            + bottom + System.lineSeparator();
                     /* Replace file in working directory */
                     File outFile = Utils.join(CWD, s);
                     writeContents(outFile, finalContent);
@@ -500,7 +503,8 @@ public class Repository {
                     String middle = "=======";
                     String bottom = ">>>>>>>";
                     String finalContent = top + System.lineSeparator() + stringHead + middle
-                            + System.lineSeparator() + stringBranch + bottom + System.lineSeparator();
+                            + System.lineSeparator() + stringBranch
+                            + bottom + System.lineSeparator();
 
                     /* Replace file in working directory */
                     File outFile = Utils.join(CWD, s);
@@ -616,8 +620,8 @@ public class Repository {
             System.exit(0);
         }
         if (getUntrackFile().size() > 0) {
-            System.out.println("There is an untracked file in the way; " +
-                    "delete it, or add and commit it first.");
+            System.out.println("There is an untracked file in the way; "
+                    + "delete it, or add and commit it first.");
             System.exit(0);
         }
         String commitSHA = branch.get(branchName);
@@ -652,8 +656,8 @@ public class Repository {
     public static void reset(String commitId) {
         getCommitfromSHA(commitId);
         if (getUntrackFile().size() > 0) {
-            System.out.println("There is an untracked file in the way; " +
-                    "delete it, or add and commit it first.");
+            System.out.println("There is an untracked file in the way; "
+                    + "delete it, or add and commit it first.");
             System.exit(0);
         }
         replaceFilefromcommit(commitId);
