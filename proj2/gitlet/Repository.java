@@ -360,44 +360,9 @@ public class Repository {
             System.exit(0);
         }
     }
-    public static void mergeBranch(String branchName) {
-        /* Record whether encountered a merge conflict. */
-        boolean changed = false;
-        /* get current stage Blobs and rmBlobs*/
-        StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
-        HashMap<String, String> blobs = stage.getBlobs();
-        HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
-        Tree temp = readObject(TREE_PATH, Tree.class);
-        HashMap<String, String> branch = temp.getBranch();
-        mergeAlert(branchName);
-        /* Get given branch commit */
-        String branchCommitsha = branch.get(branchName);
-        Commit branchCommit = getCommitfromSHA(branchCommitsha);
-        /* Get head commit */
-        String headCommitsha = temp.getHead();
-        Commit head = getHeadCommit();
-        /* Get split commit */
-        String splitCommitsha = getSplitCommitsha(headCommitsha, branchCommitsha);
-        Commit splitCommit = getCommitfromSHA(splitCommitsha);
-//        System.out.println(splitCommit.getMessage());
-        /* If split commit equals to given branch commit, print error */
-        if (splitCommitsha.equals(branchCommitsha)) {
-            System.out.println("Given branch is an ancestor of the current branch.");
-            System.exit(0);
-        }
-        /* If the split point is the current branch, checkout given branch */
-        if (splitCommitsha.equals(temp.getHead())) {
-            checkoutBranch(branchName);
-            System.out.println("Current branch fast-forwarded.");
-            System.exit(0);
-        }
-        /* Create new stage area */
-        StagingArea newStage = new StagingArea();
-        /* Create new commit */
-        String message = "Merged " + branchName + " into " + temp.getCurBranch();
-        Commit newCommit = new Commit(message, temp.getHead(), branchCommitsha);
-        HashMap<String, String> remainBlobs = newCommit.getBlobs();
-
+    private static boolean mergeConditionhelp(StagingArea newStage, Commit splitCommit,
+                                              Commit head, Commit branchCommit,
+                                              HashMap<String, String> remainBlobs, boolean changed) {
         /* Get new stage area blob and rmblob */
         HashMap<String, String> stageBlobs = newStage.getBlobs();
         HashSet<String> stagermBlobs = newStage.getRmBolbsBlobs();
@@ -455,6 +420,57 @@ public class Repository {
                 }
             }
         }
+        return changed;
+    }
+
+    public static void mergeBranch(String branchName) {
+        /* Record whether encountered a merge conflict. */
+        boolean changed = false;
+        /* get current stage Blobs and rmBlobs*/
+        StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
+        HashMap<String, String> blobs = stage.getBlobs();
+        HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
+        Tree temp = readObject(TREE_PATH, Tree.class);
+        HashMap<String, String> branch = temp.getBranch();
+        mergeAlert(branchName);
+        /* Get given branch commit */
+        String branchCommitsha = branch.get(branchName);
+        Commit branchCommit = getCommitfromSHA(branchCommitsha);
+        /* Get head commit */
+        String headCommitsha = temp.getHead();
+        Commit head = getHeadCommit();
+        /* Get split commit */
+        String splitCommitsha = getSplitCommitsha(headCommitsha, branchCommitsha);
+        Commit splitCommit = getCommitfromSHA(splitCommitsha);
+//        System.out.println(splitCommit.getMessage());
+        /* If split commit equals to given branch commit, print error */
+        if (splitCommitsha.equals(branchCommitsha)) {
+            System.out.println("Given branch is an ancestor of the current branch.");
+            System.exit(0);
+        }
+        /* If the split point is the current branch, checkout given branch */
+        if (splitCommitsha.equals(temp.getHead())) {
+            checkoutBranch(branchName);
+            System.out.println("Current branch fast-forwarded.");
+            System.exit(0);
+        }
+        /* Create new stage area */
+        StagingArea newStage = new StagingArea();
+        /* Create new commit */
+        String message = "Merged " + branchName + " into " + temp.getCurBranch();
+        Commit newCommit = new Commit(message, temp.getHead(), branchCommitsha);
+        HashMap<String, String> remainBlobs = newCommit.getBlobs();
+        /* Get new stage area blob and rmblob */
+        HashMap<String, String> stageBlobs = newStage.getBlobs();
+        HashSet<String> stagermBlobs = newStage.getRmBolbsBlobs();
+        /* Get split commit blobs */
+        HashMap<String, String> splitBlobs = splitCommit.getBlobs();
+        /* Get head commit blobs */
+        HashMap<String, String> headBlobs = head.getBlobs();
+        /* Get branch commit blobs */
+        HashMap<String, String> branchBolbs = branchCommit.getBlobs();
+        changed = mergeConditionhelp(newStage, splitCommit, head, branchCommit, remainBlobs, changed);
+
         /* Iterate branch commit blobs which split commit and head commit doesn't have */
         for (String s : branchBolbs.keySet()) {
             if (!splitBlobs.containsKey(s) && !headBlobs.containsKey(s)) {
