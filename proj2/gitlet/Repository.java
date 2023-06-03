@@ -288,20 +288,22 @@ public class Repository {
             System.exit(0);
         }
         /* Get given branch commit */
-        String branchNamesha = branch.get(branchName);
-        Commit branchCommit = getCommitfromSHA(branchNamesha);
+        String branchCommitsha = branch.get(branchName);
+        Commit branchCommit = getCommitfromSHA(branchCommitsha);
         /* Get head commit */
+        String headCommitsha = temp.getHead();
         Commit head = getHeadCommit();
         /* Get split commit */
-        HashSet<Commit> branchLog = new HashSet<>();
+        HashSet<String> branchLog = new HashSet<>();
         Commit help = branchCommit;
         Commit help1 = head;
-        branchLog.add(help);
+        branchLog.add(branchCommitsha);
         while (help.getFirstParent() != null) {
+            branchLog.add(help.getFirstParent());
             help = getCommitfromSHA(help.getFirstParent());
-            branchLog.add(help);
         }
-        while (!branchLog.contains(help1) && help1.getFirstParent() != null) {
+        while (!branchLog.contains(headCommitsha) && help1.getFirstParent() != null) {
+            headCommitsha = help1.getFirstParent();
             help1 = getCommitfromSHA(help1.getFirstParent());
         }
         Commit splitCommit = help1;
@@ -320,7 +322,7 @@ public class Repository {
         StagingArea newStage = new StagingArea();
         /* Create new commit */
         String message = "Merged " + branchName + " into " + temp.getCurBranch();
-        Commit newCommit = new Commit(message, temp.getHead(), branchNamesha);
+        Commit newCommit = new Commit(message, temp.getHead(), branchCommitsha);
         HashMap<String, String> remainBlobs = newCommit.getBlobs();
 
         /* Get new stage area blob and rmblob */
@@ -362,6 +364,12 @@ public class Repository {
                     File outFile = Utils.join(CWD, s);
                     writeContents(outFile, finalContent);
                     String fileSHA = getSHAfromfile(s);
+                    /* Save blob */
+                    File inFile1 = Utils.join(CWD, s);
+                    byte[] filetoByte = readContents(inFile1);
+                    File outFile1 = Utils.join(BOLB_DIR, fileSHA);
+                    writeContents(outFile1, filetoByte);
+
                     stageBlobs.put(s, fileSHA);
                     changed = true;
                 }
@@ -395,13 +403,25 @@ public class Repository {
                     String middle = "=======";
                     String bottom = ">>>>>>>";
                     String finalContent = top + stringHead + middle + stringBranch + bottom;
+
+                    /* Replace file in working directory */
                     File outFile = Utils.join(CWD, s);
                     writeContents(outFile, finalContent);
                     String fileSHA = getSHAfromfile(s);
+                    /* Save blob */
+                    File inFile1 = Utils.join(CWD, s);
+                    byte[] filetoByte = readContents(inFile1);
+                    File outFile1 = Utils.join(BOLB_DIR, fileSHA);
+                    writeContents(outFile1, filetoByte);
+
                     stageBlobs.put(s, fileSHA);
                     changed = true;
                 }
             }
+        }
+        for (String key : stagermBlobs) {
+            File dfile = Utils.join(CWD, key);
+            restrictedDelete(dfile);
         }
         /* Iterate through the staging area Blobs HashMap,
          *  add files to new Blobs HashMap except for those in remove Blobs HashSet
@@ -409,20 +429,19 @@ public class Repository {
         for (String key: stageBlobs.keySet()) {
             remainBlobs.put(key, stageBlobs.get(key));
         }
-        /* Creating Blobs */
-        for (String key: remainBlobs.keySet()) {
-            File f = Utils.join(CWD, key);
-            byte[] filetoByte = readContents(f);
-            File outFile = Utils.join(BOLB_DIR, remainBlobs.get(key));
-            writeContents(outFile, filetoByte);
-        }
 
         /* add blobs to new commit */
         newCommit.addBlobs(remainBlobs);
         String newCommitSHA = sha1(getClassBytes(newCommit));
         /* Write commit */
-        File outFile = Utils.join(COMMIT_DIR, newCommitSHA);
-        writeObject(outFile, newCommit);
+        String firstTwo = newCommitSHA.substring(0, 2);
+        String last = newCommitSHA.substring(2, newCommitSHA.length());
+        File commitDir = Utils.join(COMMIT_DIR, firstTwo);
+        if (!commitDir.exists()) {
+            commitDir.mkdir();
+        }
+        File commitFile = Utils.join(COMMIT_DIR, firstTwo, last);
+        writeObject(commitFile, newCommit);
 
         /* Write to tree and stage */
         temp.put(newCommitSHA);
