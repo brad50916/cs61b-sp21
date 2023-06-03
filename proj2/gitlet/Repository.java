@@ -427,9 +427,6 @@ public class Repository {
         /* Record whether encountered a merge conflict. */
         boolean changed = false;
         /* get current stage Blobs and rmBlobs*/
-        StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
-        HashMap<String, String> blobs = stage.getBlobs();
-        HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
         Tree temp = readObject(TREE_PATH, Tree.class);
         HashMap<String, String> branch = temp.getBranch();
         mergeAlert(branchName);
@@ -442,7 +439,6 @@ public class Repository {
         /* Get split commit */
         String splitCommitsha = getSplitCommitsha(headCommitsha, branchCommitsha);
         Commit splitCommit = getCommitfromSHA(splitCommitsha);
-//        System.out.println(splitCommit.getMessage());
         /* If split commit equals to given branch commit, print error */
         if (splitCommitsha.equals(branchCommitsha)) {
             System.out.println("Given branch is an ancestor of the current branch.");
@@ -469,7 +465,8 @@ public class Repository {
         HashMap<String, String> headBlobs = head.getBlobs();
         /* Get branch commit blobs */
         HashMap<String, String> branchBolbs = branchCommit.getBlobs();
-        changed = mergeConditionhelp(newStage, splitCommit, head, branchCommit, remainBlobs, changed);
+        changed = mergeConditionhelp(newStage, splitCommit, head,
+                branchCommit, remainBlobs, changed);
 
         /* Iterate branch commit blobs which split commit and head commit doesn't have */
         for (String s : branchBolbs.keySet()) {
@@ -512,7 +509,15 @@ public class Repository {
         for (String key: stageBlobs.keySet()) {
             remainBlobs.put(key, stageBlobs.get(key));
         }
-
+        mergeSavehelp(newCommit, temp, remainBlobs, branch, branchName);
+        /* If there is a merge conflict, print message */
+        if (changed) {
+            System.out.println("Encountered a merge conflict.");
+        }
+    }
+    private static void mergeSavehelp(Commit newCommit, Tree temp,
+                                      HashMap<String, String> remainBlobs,
+                                      HashMap<String, String> branch, String branchName) {
         /* add blobs to new commit */
         newCommit.addBlobs(remainBlobs);
         String newCommitSHA = sha1(getClassBytes(newCommit));
@@ -530,12 +535,8 @@ public class Repository {
         temp.put(newCommitSHA);
         branch.put(branchName, newCommitSHA);
         writeObject(TREE_PATH, temp);
-        stage = new StagingArea();
+        StagingArea stage = new StagingArea();
         writeObject(STAGE_PATH, stage);
-        /* If there is a merge conflict, print message */
-        if (changed) {
-            System.out.println("Encountered a merge conflict.");
-        }
         replaceFilefromcommit(newCommitSHA);
     }
     /** checkout -- [file name] */
