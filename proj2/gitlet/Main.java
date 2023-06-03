@@ -9,7 +9,8 @@ public class Main {
      */
     public static void main(String[] args) {
         if (args.length == 0) {
-            throw new IllegalArgumentException("Please enter a command.");
+            System.out.println("Please enter a command.");
+            System.exit(0);
         }
         String firstArg = args[0];
         switch (firstArg) {
@@ -83,7 +84,8 @@ public class Main {
                 Repository.mergeBranch(args[1]);
                 break;
             default:
-                throw new IllegalArgumentException("No command with that name exists.");
+                System.out.println("No command with that name exists.");
+                System.exit(0);
         }
     }
     public static void validateNumArgs(String cmd, String[] args, int n) {
@@ -92,8 +94,8 @@ public class Main {
                 System.out.println("Please enter a commit message.");
                 System.exit(0);
             }
-            throw new RuntimeException(
-                    String.format("Invalid number of arguments for: %s.", cmd));
+            System.out.println("Invalid number of arguments");
+            System.exit(0);
         }
     }
 }

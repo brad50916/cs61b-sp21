@@ -119,6 +119,10 @@ public class Repository {
         }
     }
     public static void status() {
+        if (!GITLET_DIR.exists()) {
+            System.out.println("Not in an initialized Gitlet directory.");
+            System.exit(0);
+        }
         System.out.println("=== Branches ===");
         Tree temp = readObject(TREE_PATH, Tree.class);
         String curBranch = temp.getCurBranch();
