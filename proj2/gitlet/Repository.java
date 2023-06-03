@@ -1,4 +1,6 @@
 package gitlet;
+import afu.org.checkerframework.checker.igj.qual.I;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -257,6 +259,58 @@ public class Repository {
         Commit c = getCommitfromSHA(sha);
         return c;
     }
+    private static String getSplitCommitsha(String head, String branch) {
+        /* key is commit SHA, value is depth*/
+        HashMap<String, Integer> headLog = new HashMap<>();
+        HashMap<String, Integer> branchLog = new HashMap<>();
+        Queue<String> headQ = new LinkedList<>();
+        headQ.add(head);
+        int depth = 0;
+        while (!headQ.isEmpty()) {
+            int size = headQ.size();
+            while (size-- > 0) {
+                String temp = headQ.remove();
+                headLog.put(temp, depth);
+                Commit tempc = getCommitfromSHA(temp);
+                if (tempc.getFirstParent() != null) {
+                    headQ.add(tempc.getFirstParent());
+                }
+                if (tempc.getSecondParent() != null) {
+                    headQ.add(tempc.getFirstParent());
+                }
+            }
+            depth++;
+        }
+        Queue<String> branchQ = new LinkedList<>();
+        branchQ.add(branch);
+        depth = 0;
+        while (!branchQ.isEmpty()) {
+            int size = branchQ.size();
+            while (size-- > 0) {
+                String temp = branchQ.remove();
+                branchLog.put(temp, depth);
+                Commit tempc = getCommitfromSHA(temp);
+                if (tempc.getFirstParent() != null) {
+                    branchQ.add(tempc.getFirstParent());
+                }
+                if (tempc.getSecondParent() != null) {
+                    branchQ.add(tempc.getFirstParent());
+                }
+            }
+            depth++;
+        }
+        String minKey = null;
+        int minValue = Integer.MAX_VALUE;
+        for (String s : headLog.keySet()) {
+            if (branchLog.containsKey(s)) {
+                if (branchLog.get(s) < minValue) {
+                    minValue = branchLog.get(s);
+                    minKey = s;
+                }
+            }
+        }
+        return minKey;
+    }
     public static void mergeBranch(String branchName) {
         /* Record whether encountered a merge conflict. */
         boolean changed = false;
@@ -294,20 +348,8 @@ public class Repository {
         String headCommitsha = temp.getHead();
         Commit head = getHeadCommit();
         /* Get split commit */
-        HashSet<String> branchLog = new HashSet<>();
-        Commit help = branchCommit;
-        Commit help1 = head;
-        branchLog.add(branchCommitsha);
-        while (help.getFirstParent() != null) {
-            branchLog.add(help.getFirstParent());
-            help = getCommitfromSHA(help.getFirstParent());
-        }
-        while (!branchLog.contains(headCommitsha) && help1.getFirstParent() != null) {
-            headCommitsha = help1.getFirstParent();
-            help1 = getCommitfromSHA(help1.getFirstParent());
-        }
-        Commit splitCommit = help1;
-        String splitCommitsha = headCommitsha;
+        String splitCommitsha = getSplitCommitsha(headCommitsha, branchCommitsha);
+
         /* If split commit equals to given branch commit, print error */
         if (splitCommitsha.equals(branchCommitsha)) {
             System.out.println("Given branch is an ancestor of the current branch.");
@@ -512,7 +554,7 @@ public class Repository {
         File outFile = Utils.join(CWD, fileName);
         writeContents(outFile, oldFile);
     }
-    public static Commit getCommitfromSHA(String commitId) {
+    private static Commit getCommitfromSHA(String commitId) {
         String firstTwo = commitId.substring(0, 2);
         String last = commitId.substring(2, commitId.length());
         File commitDir = Utils.join(COMMIT_DIR, firstTwo);
@@ -818,7 +860,7 @@ public class Repository {
         writeObject(STAGE_PATH, stage);
     }
 
-    public static byte[] getClassBytes(Object myObject) {
+    private static byte[] getClassBytes(Object myObject) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
             oos.writeObject(myObject);
