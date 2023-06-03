@@ -331,10 +331,7 @@ public class Repository {
         writeContents(outFile1, filetoByte);
         return fileSHA;
     }
-    public static void mergeBranch(String branchName) {
-        /* Record whether encountered a merge conflict. */
-        boolean changed = false;
-        /* get current stage Blobs and rmBlobs*/
+    private static void mergeAlert(String branchName) {
         StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
         HashMap<String, String> blobs = stage.getBlobs();
         HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
@@ -362,6 +359,17 @@ public class Repository {
                     + "delete it, or add and commit it first.");
             System.exit(0);
         }
+    }
+    public static void mergeBranch(String branchName) {
+        /* Record whether encountered a merge conflict. */
+        boolean changed = false;
+        /* get current stage Blobs and rmBlobs*/
+        StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
+        HashMap<String, String> blobs = stage.getBlobs();
+        HashSet<String> rmBlobs = stage.getRmBolbsBlobs();
+        Tree temp = readObject(TREE_PATH, Tree.class);
+        HashMap<String, String> branch = temp.getBranch();
+        mergeAlert(branchName);
         /* Get given branch commit */
         String branchCommitsha = branch.get(branchName);
         Commit branchCommit = getCommitfromSHA(branchCommitsha);
