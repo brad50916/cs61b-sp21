@@ -131,7 +131,6 @@ public class Repository {
             System.out.print("*");
         }
         System.out.println("master");
-        System.out.println("other-branch");
         for (String key: sortSet) {
             if (key.equals("master")) {
                 continue;
@@ -537,6 +536,8 @@ public class Repository {
         replaceFilefromcommit(commitId);
         Tree temp = readObject(TREE_PATH, Tree.class);
         temp.changeHead(commitId);
+        HashMap<String, String> branch = temp.getBranch();
+        branch.put(temp.getCurBranch(), commitId);
         writeObject(TREE_PATH, temp);
     }
     private static void rmAllFile(File directory) {
@@ -595,10 +596,10 @@ public class Repository {
              *  If is equal, remove the file from the stage.
              */
             if (h.containsKey(fileName) && fileSHA.equals(h.get(fileName))) {
-                System.out.println("there is no change to the file compared to previous commit");
+//                System.out.println("there is no change to the file compared to previous commit");
                 StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
                 if (stage.getBlobs().containsKey(fileName)) {
-                    System.out.println("Remove the file from commit");
+//                    System.out.println("Remove the file from commit");
                     stage.removeBlob(fileName);
                     writeObject(STAGE_PATH, stage);
                     return;
@@ -611,7 +612,7 @@ public class Repository {
         HashMap<String, String> blobs = stage.getBlobs();
 
         if (blobs.containsKey(fileName) && fileSHA.equals(blobs.get(fileName))) {
-            System.out.println("there is no change to the file compared to previous add version");
+//            System.out.println("there is no change to the file compared to previous add version");
             return;
         }
 
@@ -697,7 +698,7 @@ public class Repository {
         HashMap<String, String> stageBlobs = stage.getBlobs();
         /* If file exist in staging area, remove it */
         if (stageBlobs.containsKey(fileName)) {
-            System.out.println("Remove file from staging area");
+//            System.out.println("Remove file from staging area");
             stage.removeBlob(fileName);
             writeObject(STAGE_PATH, stage);
             changed = true;
@@ -708,15 +709,13 @@ public class Repository {
         HashMap<String, String> headBlobs = c.getBlobs();
         /* If file exist in current commit, remove it */
         if (headBlobs.containsKey(fileName)) {
-            System.out.println("Remove file from the working directory");
+//            System.out.println("Remove file from the working directory");
             /* Stage it for removal */
             stage.addtormBlob(fileName);
             writeObject(STAGE_PATH, stage);
             /* Remove the file from the working directory  */
             File f = Utils.join(CWD, fileName);
-            if (!restrictedDelete(f)) {
-                System.out.println("Fail to delete the file");
-            }
+            restrictedDelete(f);
             changed = true;
         }
 
