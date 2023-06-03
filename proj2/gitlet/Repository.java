@@ -29,9 +29,10 @@ public class Repository {
     public static final File TREE_PATH = join(CWD, ".gitlet", "tree");
     public static final File STAGE_PATH = join(CWD, ".gitlet", "stage");
     private static String[] excludedPrefixDir = new String[]{".", "gitlet", "testing"};
-    private static String[] excludedPrefixFile = new String[]{".DS_Store", "Makefile"
-            , "pom.xml", "gitlet-design.md"};
+    private static String[] excludedPrefixFile =
+            new String[]{".DS_Store", "Makefile", "pom.xml", "gitlet-design.md"};
     private static List<String> recordFile;
+    private static final int FORTY = 40;
 
 
     public static boolean setupPersistence() {
@@ -299,8 +300,6 @@ public class Repository {
             }
             depth++;
         }
-//        System.out.println(headLog);
-//        System.out.println(branchLog);
         String minKey = null;
         int minValue = Integer.MAX_VALUE;
         for (String s : headLog.keySet()) {
@@ -376,7 +375,8 @@ public class Repository {
     }
     private static boolean mergeConditionhelp(StagingArea newStage, Commit splitCommit,
                                               Commit head, Commit branchCommit,
-                                              HashMap<String, String> remainBlobs, boolean changed) {
+                                              HashMap<String, String> remainBlobs,
+                                              boolean changed) {
         /* Get new stage area blob and rmblob */
         HashMap<String, String> stageBlobs = newStage.getBlobs();
         HashSet<String> stagermBlobs = newStage.getRmBolbsBlobs();
@@ -705,10 +705,8 @@ public class Repository {
              *  If is equal, remove the file from the stage.
              */
             if (h.containsKey(fileName) && fileSHA.equals(h.get(fileName))) {
-//                System.out.println("there is no change to the file compared to previous commit");
                 StagingArea stage = readObject(STAGE_PATH, StagingArea.class);
                 if (stage.getBlobs().containsKey(fileName)) {
-//                    System.out.println("Remove the file from commit");
                     stage.removeBlob(fileName);
                     writeObject(STAGE_PATH, stage);
                 }
@@ -724,7 +722,6 @@ public class Repository {
         HashMap<String, String> blobs = stage.getBlobs();
 
         if (blobs.containsKey(fileName) && fileSHA.equals(blobs.get(fileName))) {
-//            System.out.println("there is no change to the file compared to previous add version");
             return;
         }
 
@@ -791,7 +788,7 @@ public class Repository {
 
         /* Write commit */
         String firstTwo = s.substring(0, 2);
-        String last = s.substring(2, 40);
+        String last = s.substring(2, FORTY);
         File commitDir = Utils.join(COMMIT_DIR, firstTwo);
         if (!commitDir.exists()) {
             commitDir.mkdir();
@@ -813,7 +810,6 @@ public class Repository {
         HashMap<String, String> stageBlobs = stage.getBlobs();
         /* If file exist in staging area, remove it */
         if (stageBlobs.containsKey(fileName)) {
-//            System.out.println("Remove file from staging area");
             stage.removeBlob(fileName);
             writeObject(STAGE_PATH, stage);
             changed = true;
@@ -823,7 +819,6 @@ public class Repository {
         HashMap<String, String> headBlobs = c.getBlobs();
         /* If file exist in current commit, remove it */
         if (headBlobs.containsKey(fileName)) {
-//            System.out.println("Remove file from the working directory");
             /* Stage it for removal */
             stage.addtormBlob(fileName);
             writeObject(STAGE_PATH, stage);
@@ -854,7 +849,7 @@ public class Repository {
 
         /* Write commit */
         String firstTwo = s.substring(0, 2);
-        String last = s.substring(2, 40);
+        String last = s.substring(2, FORTY);
         File commitDir = Utils.join(COMMIT_DIR, firstTwo);
         if (!commitDir.exists()) {
             commitDir.mkdir();
