@@ -313,6 +313,24 @@ public class Repository {
         }
         return minKey;
     }
+    private static String conflictFile(String stringHead, String stringBranch, String fileName) {
+        String top = "<<<<<<< HEAD";
+        String middle = "=======";
+        String bottom = ">>>>>>>";
+        String finalContent = top + System.lineSeparator() + stringHead + middle
+                + System.lineSeparator() + stringBranch
+                + bottom + System.lineSeparator();
+        /* Replace file in working directory */
+        File outFile = Utils.join(CWD, fileName);
+        writeContents(outFile, finalContent);
+        String fileSHA = getSHAfromfile(fileName);
+        /* Save blob */
+        File inFile1 = Utils.join(CWD, fileName);
+        byte[] filetoByte = readContents(inFile1);
+        File outFile1 = Utils.join(BOLB_DIR, fileSHA);
+        writeContents(outFile1, filetoByte);
+        return fileSHA;
+    }
     public static void mergeBranch(String branchName) {
         /* Record whether encountered a merge conflict. */
         boolean changed = false;
@@ -390,22 +408,7 @@ public class Repository {
                     File inFileHead = Utils.join(BOLB_DIR, headBlobs.get(s));
                     String stringHead = readContentsAsString(inFileHead);
                     String stringBranch = "";
-                    String top = "<<<<<<< HEAD";
-                    String middle = "=======";
-                    String bottom = ">>>>>>>";
-                    String finalContent = top + System.lineSeparator() + stringHead + middle
-                            + System.lineSeparator() + stringBranch
-                            + bottom + System.lineSeparator();
-                    /* Replace file in working directory */
-                    File outFile = Utils.join(CWD, s);
-                    writeContents(outFile, finalContent);
-                    String fileSHA = getSHAfromfile(s);
-                    /* Save blob */
-                    File inFile1 = Utils.join(CWD, s);
-                    byte[] filetoByte = readContents(inFile1);
-                    File outFile1 = Utils.join(BOLB_DIR, fileSHA);
-                    writeContents(outFile1, filetoByte);
-
+                    String fileSHA = conflictFile(stringHead, stringBranch, s);
                     stageBlobs.put(s, fileSHA);
                     changed = true;
                 } else {
@@ -416,22 +419,7 @@ public class Repository {
                     File inFileHead = Utils.join(BOLB_DIR, branchBolbs.get(s));
                     String stringHead = "";
                     String stringBranch = readContentsAsString(inFileHead);
-                    String top = "<<<<<<< HEAD";
-                    String middle = "=======";
-                    String bottom = ">>>>>>>";
-                    String finalContent = top + System.lineSeparator() + stringHead + middle
-                            + System.lineSeparator() + stringBranch
-                            + bottom + System.lineSeparator();
-                    /* Replace file in working directory */
-                    File outFile = Utils.join(CWD, s);
-                    writeContents(outFile, finalContent);
-                    String fileSHA = getSHAfromfile(s);
-                    /* Save blob */
-                    File inFile1 = Utils.join(CWD, s);
-                    byte[] filetoByte = readContents(inFile1);
-                    File outFile1 = Utils.join(BOLB_DIR, fileSHA);
-                    writeContents(outFile1, filetoByte);
-
+                    String fileSHA = conflictFile(stringHead, stringBranch, s);
                     stageBlobs.put(s, fileSHA);
                     changed = true;
                 }
@@ -453,22 +441,7 @@ public class Repository {
                     String stringHead = readContentsAsString(inFileHead);
                     File inFileBranch = Utils.join(BOLB_DIR, branchBolbs.get(s));
                     String stringBranch = readContentsAsString(inFileBranch);
-                    String top = "<<<<<<< HEAD";
-                    String middle = "=======";
-                    String bottom = ">>>>>>>";
-                    String finalContent = top + System.lineSeparator() + stringHead + middle
-                            + System.lineSeparator() + stringBranch
-                            + bottom + System.lineSeparator();
-                    /* Replace file in working directory */
-                    File outFile = Utils.join(CWD, s);
-                    writeContents(outFile, finalContent);
-                    String fileSHA = getSHAfromfile(s);
-                    /* Save blob */
-                    File inFile1 = Utils.join(CWD, s);
-                    byte[] filetoByte = readContents(inFile1);
-                    File outFile1 = Utils.join(BOLB_DIR, fileSHA);
-                    writeContents(outFile1, filetoByte);
-
+                    String fileSHA = conflictFile(stringHead, stringBranch, s);
                     stageBlobs.put(s, fileSHA);
                     changed = true;
                 }
@@ -499,23 +472,7 @@ public class Repository {
                     String stringHead = readContentsAsString(inFileHead);
                     File inFileBranch = Utils.join(BOLB_DIR, branchBolbs.get(s));
                     String stringBranch = readContentsAsString(inFileBranch);
-                    String top = "<<<<<<< HEAD";
-                    String middle = "=======";
-                    String bottom = ">>>>>>>";
-                    String finalContent = top + System.lineSeparator() + stringHead + middle
-                            + System.lineSeparator() + stringBranch
-                            + bottom + System.lineSeparator();
-
-                    /* Replace file in working directory */
-                    File outFile = Utils.join(CWD, s);
-                    writeContents(outFile, finalContent);
-                    String fileSHA = getSHAfromfile(s);
-                    /* Save blob */
-                    File inFile1 = Utils.join(CWD, s);
-                    byte[] filetoByte = readContents(inFile1);
-                    File outFile1 = Utils.join(BOLB_DIR, fileSHA);
-                    writeContents(outFile1, filetoByte);
-
+                    String fileSHA = conflictFile(stringHead, stringBranch, s);
                     stageBlobs.put(s, fileSHA);
                     changed = true;
                 }
