@@ -12,15 +12,27 @@ import java.util.Random;
  * Draws a world consisting of hexagonal regions.
  */
 public class HexWorld {
-    private static final int WIDTH = 50;
-    private static final int HEIGHT = 50;
-    private static final long SEED = 2873123;
-    private static final Random RANDOM = new Random(SEED);
-    private static void addHexagon(int s, TETile[][] world, int x, int y, TETile patern) {
-        int length = s + 2 * (s - 1);
+    private static final int WIDTH = 60;
+    private static final int HEIGHT = 60;
+    private static final Random RANDOM = new Random();
+    private static class Position {
+        private int x;
+        private int y;
+        Position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+        public void update(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+    }
+    private static void addHexagon(int size, TETile[][] world, Position p, TETile patern) {
+        int length = size + 2 * (size - 1);
         int count = 0;
-        for (int j = y + s - 1; j >= y; j -= 1) {
-            for (int i = x + count; i < x + length - count; i += 1) {
+        for (int j = p.y + size - 1; j >= p.y; j -= 1) {
+            for (int i = p.x + count; i < p.x + length - count; i += 1) {
                 world[i][j] = patern;
                 world[i][j + 2 * count + 1] = patern;
 //                Random r = new Random();
@@ -29,6 +41,10 @@ public class HexWorld {
             }
             count++;
         }
+    }
+    private static Position getBottomNeighbor(Position p, int size) {
+        Position p1 = new Position(p.x, p.y - size * 2);
+        return p1;
     }
     private static TETile randomTile() {
         int tileNum = RANDOM.nextInt(11);
@@ -47,6 +63,28 @@ public class HexWorld {
             default: return Tileset.NOTHING;
         }
     }
+    private static void addHexColumn(int size, TETile[][] world, Position p, int nums) {
+        if (nums < 1) return;
+
+        addHexagon(size, world, p, randomTile());
+
+        if (nums > 1) {
+            Position bottomNeighbor = getBottomNeighbor(p, size);
+            addHexColumn(size, world, bottomNeighbor, nums - 1);
+        }
+    }
+    private static void drawWorld(int size, TETile[][] world, int hexSize) {
+        Position p = new Position(0, 35);
+        for (int i = 0; i < hexSize; i++) {
+            p.update(p.x + size * 2 - 1, p.y + size);
+            addHexColumn(size, world, p, hexSize + i);
+        }
+        for (int j = 0; j < hexSize - 1; j++) {
+            p.update(p.x + size * 2 - 1, p.y - size);
+            addHexColumn(size, world, p, hexSize * 2 - 2 - j);
+        }
+
+    }
     public static void main(String[] args) {
         // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
         TERenderer ter = new TERenderer();
@@ -59,9 +97,8 @@ public class HexWorld {
                 world[x][y] = Tileset.NOTHING;
             }
         }
-
         // draw hexagon
-        addHexagon(5, world, 20, 20, randomTile());
+        drawWorld(4, world, 3);
 
         // draws the world to the screen
         ter.renderFrame(world);
