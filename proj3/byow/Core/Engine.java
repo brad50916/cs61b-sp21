@@ -15,10 +15,10 @@ public class Engine {
     public static final int WIDTH = 80;
     public static final int HEIGHT = 40;
     public static final int ROOMLENGTHMAX = 10;
-    public static final int ROOMLENGTHMIN = 3;
-    public static final int NUMBEROFROOM = 15;
+    public static final int ROOMLENGTHMIN = 2;
+    public static final int NUMBEROFROOM = 50;
 
-    private static final Random RANDOM = new Random(0);
+    private static final Random RANDOM = new Random();
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
      * including inputs from the main menu.
@@ -69,8 +69,9 @@ public class Engine {
         }
 
         // Draw room on final world frame
-        drawRoom(finalWorldFrame);
+        drawRoom(finalWorldFrame, Tileset.WALL);
 
+        drawroomFloor(finalWorldFrame, Tileset.FLOOR);
         // Render the world
         ter.renderFrame(finalWorldFrame);
         return finalWorldFrame;
@@ -87,7 +88,15 @@ public class Engine {
             }
         }
     }
-
+    private void drawroomFloor(TETile[][] world, TETile type) {
+        for (Room r : allRoom) {
+           for (int i = r.getBottomLeft().getX() + 1; i < r.getTopRight().getX(); i++) {
+               for (int j = r.getBottomLeft().getY() + 1; j < r.getTopRight().getY(); j++) {
+                   world[i][j] = type;
+               }
+           }
+        }
+    }
     /***
      * Draw vertical line.
      * @param world the TETile 2D array
@@ -126,14 +135,14 @@ public class Engine {
     /***
      * Draw rooms on given TETile 2D array.
      * @param world The 2D array.
+     * @param type The type of wall
      */
-    private void drawRoom(TETile[][] world) {
+    private void drawRoom(TETile[][] world, TETile type) {
         for (Room r : allRoom) {
             Position x1 = r.getBottomLeft();
             Position y2 = r.getTopRight();
             Position x2 = new Position(y2.getX(), x1.getY());
             Position y1 = new Position(x1.getX(), y2.getY());
-            TETile type = Tileset.WALL;
             drawCorner(world, type, x1);
             drawCorner(world, type, x2);
             drawCorner(world, type, y1);
