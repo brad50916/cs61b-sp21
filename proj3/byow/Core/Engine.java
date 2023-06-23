@@ -16,6 +16,8 @@ public class Engine {
     public static final int HEIGHT = 40;
     public static final int ROOMLENGTHMAX = 10;
     public static final int ROOMLENGTHMIN = 3;
+    public static final int NUMBEROFROOM = 15;
+
     private static final Random RANDOM = new Random(0);
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
@@ -57,7 +59,10 @@ public class Engine {
 
         TETile[][] finalWorldFrame = new TETile[WIDTH][HEIGHT];
         initialize(finalWorldFrame);
-        generateRoom();
+
+        while (allRoom.size() < NUMBEROFROOM) {
+            generateRoom();
+        }
         drawRoom(finalWorldFrame);
 
         ter.renderFrame(finalWorldFrame);
@@ -106,7 +111,41 @@ public class Engine {
         Position p = randomPoint();
         int width = randomLength();
         int height = randomLength();
-        allRoom.add(createRoom(p, width, height));
+        Room newRoom = createRoom(p, width, height);
+        if (checkOverlap(newRoom) == false) {
+            allRoom.add(newRoom);
+        }
+    }
+    private boolean checkOverlap(Room newRoom) {
+        Position bl = newRoom.getBottomLeft();
+        Position tr = newRoom.getTopRight();
+        for (Room r : allRoom) {
+            for (int i = bl.getX(); i < tr.getX(); i++) {
+                Position p1 = new Position(i, bl.getY());
+                Position p2 = new Position(i, tr.getY());
+                if (checkOverlapHelp(p1, r) || checkOverlapHelp(p2, r)) {
+                    return true;
+                }
+            }
+            for (int j = bl.getY(); j < tr.getY(); j++) {
+                Position p1 = new Position(bl.getX(), j);
+                Position p2 = new Position(tr.getX(), j);
+                if (checkOverlapHelp(p1, r) || checkOverlapHelp(p2, r)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean checkOverlapHelp(Position p, Room r) {
+        Position bl = r.getBottomLeft();
+        Position tr = r.getTopRight();
+        if (bl.getX() <= p.getX() && p.getX() <= tr.getX()
+        && bl.getY() <= p.getY() && p.getY() <= tr.getY()) {
+            return true;
+        }
+        return false;
     }
     private Position randomPoint() {
         int x = RandomUtils.uniform(RANDOM, 0, WIDTH - ROOMLENGTHMAX);
