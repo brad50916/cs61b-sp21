@@ -55,19 +55,31 @@ public class Engine {
         //
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
+
+        // Initialize the world
         ter.initialize(WIDTH, HEIGHT);
 
+        // Initialize the 2D array
         TETile[][] finalWorldFrame = new TETile[WIDTH][HEIGHT];
         initialize(finalWorldFrame);
 
+        // Generate rooms
         while (allRoom.size() < NUMBEROFROOM) {
             generateRoom();
         }
+
+        // Draw room on final world frame
         drawRoom(finalWorldFrame);
 
+        // Render the world
         ter.renderFrame(finalWorldFrame);
         return finalWorldFrame;
     }
+
+    /***
+     * Initialize the given TETile 2D array with Tileset.NOTHING.
+     * @param finalWorldFrame The TETile 2D array
+     */
     private static void initialize(TETile[][] finalWorldFrame) {
         for (int x = 0; x < WIDTH; x += 1) {
             for (int y = 0; y < HEIGHT; y += 1) {
@@ -75,21 +87,46 @@ public class Engine {
             }
         }
     }
+
+    /***
+     * Draw vertical line.
+     * @param world the TETile 2D array
+     * @param type the type of TETile
+     * @param start the start Position
+     * @param end the end Position
+     */
     private static void drawVerticalHallway(TETile[][] world, TETile type, Position start, Position end) {
         for (int i = end.getY() - 1; i > start.getY(); i--) {
             world[start.getX()][i] = type;
         }
     }
-
+    /***
+     * Draw horizontal line.
+     * @param world the TETile 2D array
+     * @param type the type of TETile
+     * @param start the start Position
+     * @param end the end Position
+     */
     private static void drawHorizontalHallway(TETile[][] world, TETile type, Position start, Position end) {
         for (int i = end.getX() - 1; i > start.getX(); i--) {
             world[i][start.getY()] = type;
         }
     }
 
+    /***
+     * Draw corner
+     * @param world the TETile 2D array
+     * @param type the type of TETile
+     * @param corner the corner Position
+     */
     private static void drawCorner(TETile[][] world, TETile type, Position corner) {
         world[corner.getX()][corner.getY()] = type;
     }
+
+    /***
+     * Draw rooms on given TETile 2D array.
+     * @param world The 2D array.
+     */
     private void drawRoom(TETile[][] world) {
         for (Room r : allRoom) {
             Position x1 = r.getBottomLeft();
@@ -107,6 +144,10 @@ public class Engine {
             drawVerticalHallway(world, type, x2, y2);
         }
     }
+
+    /***
+     * Generate rooms randomly.
+     */
     private void generateRoom() {
         Position p = randomPoint();
         int width = randomLength();
@@ -116,6 +157,13 @@ public class Engine {
             allRoom.add(newRoom);
         }
     }
+
+    /***
+     * Check if new Room have overlap with previous created room.
+     * @param newRoom the new created room
+     * @return {@code true} if have overlap
+     * {@code false} if don't have overlap
+     */
     private boolean checkOverlap(Room newRoom) {
         Position bl = newRoom.getBottomLeft();
         Position tr = newRoom.getTopRight();
@@ -138,6 +186,13 @@ public class Engine {
         return false;
     }
 
+    /***
+     * Check if the position have overlap with given room.
+     * @param p the position which wants to check
+     * @param r the given room r
+     * @return {@code true} if have overlap
+     * {@code false} if don't have overlap
+     */
     private boolean checkOverlapHelp(Position p, Room r) {
         Position bl = r.getBottomLeft();
         Position tr = r.getTopRight();
@@ -147,6 +202,11 @@ public class Engine {
         }
         return false;
     }
+
+    /***
+     * Generate a random Position
+     * @return the random Position
+     */
     private Position randomPoint() {
         int x = RandomUtils.uniform(RANDOM, 0, WIDTH - ROOMLENGTHMAX);
         int y = RandomUtils.uniform(RANDOM, 0, HEIGHT - ROOMLENGTHMAX);
@@ -154,16 +214,33 @@ public class Engine {
         return p;
     }
 
+    /***
+     * Generate random number depends on ROOM LENGTH MIN and ROOM LENGTH MAX
+     * @return the random number
+     */
     private int randomLength() {
         return RandomUtils.uniform(RANDOM, ROOMLENGTHMIN, ROOMLENGTHMAX);
     }
 
+    /***
+     * Create new room
+     * @param p the left-bottom position of the room
+     * @param width the room's width
+     * @param height the room's height
+     * @return the new room
+     */
     private Room createRoom(Position p, int width, int height) {
         Position p1 = new Position(p.getX() + width, p.getY() + height);
         Room r = new Room(p, p1);
         return r;
     }
 
+    /***
+     * The room object is used to represent a single room in the world.
+     *
+     * All room objects must have two position objects, one for bottom-left
+     * position and another for top-right position.
+     */
     private class Room {
         Position bottomLeft;
         Position topRight;
@@ -178,10 +255,12 @@ public class Engine {
             return topRight;
         }
     }
-    private static boolean overLap(Room a, Room b) {
-        return false;
-    }
 
+    /***
+     * The Position object is used to represent a single position in the world.
+     *
+     * All Position objects have x-axis and y-axis values.
+     */
     private class Position {
         private int x;
         private int y;
