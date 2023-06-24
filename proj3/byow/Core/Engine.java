@@ -4,6 +4,7 @@ import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
+import java.time.Year;
 import java.util.*;
 
 public class Engine {
@@ -14,8 +15,8 @@ public class Engine {
     public static final int WIDTH = 80;
     public static final int HEIGHT = 40;
     public static final int ROOMLENGTHMAX = 10;
-    public static final int ROOMLENGTHMIN = 3;
-    public static final int NUMBEROFROOM = 20;
+    public static final int ROOMLENGTHMIN = 4;
+    public static final int NUMBEROFROOM = 40;
 
     private static final Random RANDOM = new Random();
     /**
@@ -63,7 +64,14 @@ public class Engine {
         initialize(finalWorldFrame);
 
         // Generate rooms
+        int whileCount = 0;
         while (allRoom.size() < NUMBEROFROOM) {
+            whileCount++;
+            if (whileCount > 500) {
+                System.out.println("Detect while loop running over 500 times when" +
+                        " generating rooms");
+                break;
+            }
             generateRoom();
         }
 
@@ -78,7 +86,7 @@ public class Engine {
 //            generateHallway(finalWorldFrame, allRoom.get(i));
 //        }
 //        generateDoor(finalWorldFrame, allRoom.get(0));
-        for (int i = 0; i < NUMBEROFROOM; i++) {
+        for (int i = 0; i < allRoom.size(); i++) {
             generateHallway(finalWorldFrame, allRoom.get(i));
         }
 
@@ -90,6 +98,7 @@ public class Engine {
         Room end = getclosetRoom(start);
         Position closetPosition = getclosetPosition(start, end);
         HashSet<Position> path = gethallwayPath(closetPosition, start, end);
+        if (path == null) return;
         for (Position p : path) {
             drawCorner(world, Tileset.FLOOR, p);
             drawPathwall(world, p);
@@ -127,7 +136,14 @@ public class Engine {
         }
         path.add(start);
         path.add(second);
+        int whileCount = 0;
         while (checkPositionoverlap(first) == false) {
+            whileCount++;
+            if (whileCount >= 500) {
+                System.out.println("Detect while loop running over 500 times" +
+                        " when generating path");
+                return null;
+            }
             path.add(first);
             Position[] list1 = getDirection(first, endRoom);
             for (int i = 0; i < 4; i++) {
@@ -143,9 +159,7 @@ public class Engine {
             path.add(first);
             Position[] list1 = getDirection(first, endRoom);
             for (int i = 0; i < 4; i++) {
-                if (checkOverlapHelp(list1[i], startRoom) || path.contains(list1[i])) {
-                    continue;
-                } else {
+                if (!path.contains(list1[i])) {
                     first = list1[i];
                     break;
                 }
@@ -160,7 +174,8 @@ public class Engine {
             Position y2 = r.getTopRight();
             Position x2 = new Position(y2.getX(), x1.getY());
             Position y1 = new Position(x1.getX(), y2.getY());
-            if (p.equals(x1) || p.equals(x2) || p.equals(y1) || p.equals(y1)) {
+            if (p.equalsto(x1) || p.equalsto(x2) || p.equalsto(y1) || p.equalsto(y1)) {
+                System.out.println("Detect corner");
                 return true;
             }
         }
