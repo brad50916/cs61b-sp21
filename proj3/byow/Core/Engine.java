@@ -16,7 +16,7 @@ public class Engine {
     public static final int HEIGHT = 40;
     public static final int ROOMLENGTHMAX = 10;
     public static final int ROOMLENGTHMIN = 4;
-    public static final int NUMBEROFROOM = 40;
+    public static final int NUMBEROFROOM = 10;
 
     private static final Random RANDOM = new Random();
     /**
