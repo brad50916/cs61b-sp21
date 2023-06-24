@@ -78,7 +78,7 @@ public class Engine {
 //            generateHallway(finalWorldFrame, allRoom.get(i));
 //        }
 //        generateDoor(finalWorldFrame, allRoom.get(0));
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < NUMBEROFROOM; i++) {
             generateHallway(finalWorldFrame, allRoom.get(i));
         }
 
@@ -92,6 +92,19 @@ public class Engine {
         HashSet<Position> path = gethallwayPath(closetPosition, start, end);
         for (Position p : path) {
             drawCorner(world, Tileset.FLOOR, p);
+            drawPathwall(world, p);
+        }
+    }
+    private void drawPathwall(TETile[][] world, Position p) {
+        Position[] list = new Position[4];
+        list[0] = new Position(p.getX() + 1, p.getY());
+        list[1] = new Position(p.getX(), p.getY() + 1);
+        list[2] = new Position(p.getX() - 1, p.getY());
+        list[3] = new Position(p.getX(), p.getY() - 1);
+        for (int i = 0; i < 4; i++) {
+            if (world[list[i].getX()][list[i].getY()].equals(Tileset.NOTHING)) {
+                drawCorner(world, Tileset.WALL, list[i]);
+            }
         }
     }
     private HashSet<Position> gethallwayPath(Position start, Room startRoom, Room endRoom) {
@@ -126,8 +139,32 @@ public class Engine {
                 }
             }
         }
+        if (checkCorner(first)) {
+            path.add(first);
+            Position[] list1 = getDirection(first, endRoom);
+            for (int i = 0; i < 4; i++) {
+                if (checkOverlapHelp(list1[i], startRoom) || path.contains(list1[i])) {
+                    continue;
+                } else {
+                    first = list1[i];
+                    break;
+                }
+            }
+        }
         path.add(first);
         return path;
+    }
+    private boolean checkCorner(Position p) {
+        for (Room r : allRoom) {
+            Position x1 = r.getBottomLeft();
+            Position y2 = r.getTopRight();
+            Position x2 = new Position(y2.getX(), x1.getY());
+            Position y1 = new Position(x1.getX(), y2.getY());
+            if (p.equals(x1) || p.equals(x2) || p.equals(y1) || p.equals(y1)) {
+                return true;
+            }
+        }
+        return false;
     }
     private Position[] getDirection(Position start, Room end) {
         Position[] list = new Position[4];
@@ -186,11 +223,11 @@ public class Engine {
 
     private List<Position> getallPosition(Room r) {
         List<Position> allPosition = new ArrayList<>();
-        for (int i = r.getBottomLeft().getX(); i <= r.getTopRight().getX(); i++) {
+        for (int i = r.getBottomLeft().getX() + 1; i < r.getTopRight().getX(); i++) {
             allPosition.add(new Position(i, r.getBottomLeft().getY()));
             allPosition.add(new Position(i, r.getTopRight().getY()));
         }
-        for (int j = r.getBottomLeft().getY(); j <= r.getTopRight().getY(); j++) {
+        for (int j = r.getBottomLeft().getY() + 1; j < r.getTopRight().getY(); j++) {
             allPosition.add(new Position(r.getBottomLeft().getX(), j));
             allPosition.add(new Position(r.getTopRight().getX(), j));
         }
@@ -380,8 +417,8 @@ public class Engine {
      * @return the random Position
      */
     private Position randomPoint() {
-        int x = RandomUtils.uniform(RANDOM, 0, WIDTH - ROOMLENGTHMAX);
-        int y = RandomUtils.uniform(RANDOM, 0, HEIGHT - ROOMLENGTHMAX);
+        int x = RandomUtils.uniform(RANDOM, 1, WIDTH - ROOMLENGTHMAX);
+        int y = RandomUtils.uniform(RANDOM, 1, HEIGHT - ROOMLENGTHMAX);
         Position p = new Position(x, y);
         return p;
     }
