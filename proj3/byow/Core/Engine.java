@@ -4,19 +4,18 @@ import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Engine {
     TERenderer ter = new TERenderer();
     List<Room> allRoom = new ArrayList<>();
+    QuickFind disjointSet;
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 40;
     public static final int ROOMLENGTHMAX = 10;
-    public static final int ROOMLENGTHMIN = 2;
-    public static final int NUMBEROFROOM = 50;
+    public static final int ROOMLENGTHMIN = 3;
+    public static final int NUMBEROFROOM = 20;
 
     private static final Random RANDOM = new Random();
     /**
@@ -70,11 +69,162 @@ public class Engine {
 
         // Draw room on final world frame
         drawRoom(finalWorldFrame, Tileset.WALL);
-
+        // Draw room floor
         drawroomFloor(finalWorldFrame, Tileset.FLOOR);
+
+        disjointSet = new QuickFind(allRoom);
+
+//        for (int i = 0; i < allRoom.size(); i++) {
+//            generateHallway(finalWorldFrame, allRoom.get(i));
+//        }
+//        generateDoor(finalWorldFrame, allRoom.get(0));
+        for (int i = 0; i < 5; i++) {
+            generateHallway(finalWorldFrame, allRoom.get(i));
+        }
+
         // Render the world
         ter.renderFrame(finalWorldFrame);
         return finalWorldFrame;
+    }
+    private void generateHallway(TETile[][] world, Room start) {
+        Room end = getclosetRoom(start);
+        Position closetPosition = getclosetPosition(start, end);
+        HashSet<Position> path = gethallwayPath(closetPosition, start, end);
+        for (Position p : path) {
+            drawCorner(world, Tileset.FLOOR, p);
+        }
+    }
+    private HashSet<Position> gethallwayPath(Position start, Room startRoom, Room endRoom) {
+        HashSet<Position> path = new HashSet<>();
+        Position[] list = new Position[4];
+        list[0] = new Position(start.getX() + 1, start.getY());
+        list[1] = new Position(start.getX(), start.getY() + 1);
+        list[2] = new Position(start.getX() - 1, start.getY());
+        list[3] = new Position(start.getX(), start.getY() - 1);
+        Position second = null;
+        Position first = null;
+        for (int i = 0; i < 4; i++) {
+            if (checkOverlapHelp(list[i], startRoom) == false) {
+                second = list[i];
+                if (i == 0) first = new Position(second.getX() + 1, second.getY());
+                else if (i == 1) first = new Position(second.getX(), second.getY() + 1);
+                else if (i == 2) first = new Position(second.getX() - 1, second.getY());
+                else if (i == 3) first = new Position(second.getX(), second.getY() - 1);
+            }
+        }
+        path.add(start);
+        path.add(second);
+        while (checkPositionoverlap(first) == false) {
+            path.add(first);
+            Position[] list1 = getDirection(first, endRoom);
+            for (int i = 0; i < 4; i++) {
+                if (checkOverlapHelp(list1[i], startRoom) || path.contains(list1[i])) {
+                    continue;
+                } else {
+                    first = list1[i];
+                    break;
+                }
+            }
+        }
+        path.add(first);
+        return path;
+    }
+    private Position[] getDirection(Position start, Room end) {
+        Position[] list = new Position[4];
+        list[0] = new Position(start.getX() + 1, start.getY());
+        list[1] = new Position(start.getX(), start.getY() + 1);
+        list[2] = new Position(start.getX() - 1, start.getY());
+        list[3] = new Position(start.getX(), start.getY() - 1);
+
+        int endX = end.getBottomLeft().getX() + end.getWidth() / 2;
+        int endY = end.getBottomLeft().getY() + end.getHeight() / 2;
+        Arrays.sort(list, Comparator.comparingDouble(p -> Math.pow(p.getX() - endX, 2)
+                + Math.pow(p.getY() - endY, 2)));
+        return list;
+    }
+    private Room getclosetRoom(Room room) {
+        Room closetRoom = null;
+        double min = 1000;
+        for (Room r : allRoom) {
+            int x = r.getBottomLeft().getX() + r.getWidth() / 2;
+            int y = r.getBottomLeft().getY() + r.getHeight() / 2;
+            int x1 = room.getBottomLeft().getX() + room.getWidth() / 2;
+            int y1 = room.getBottomLeft().getY() + room.getHeight() / 2;
+            if (r == room) continue;
+            double dist = Math.sqrt(Math.pow(x1 - x, 2)
+                    + Math.pow(y1 - y, 2));
+            if (dist < min) {
+                min = dist;
+                closetRoom = r;
+            }
+        }
+        return closetRoom;
+    }
+
+    /***
+     * Get closet position on start room to end room
+     * @param start the start room
+     * @param end the target room
+     * @return
+     */
+    private Position getclosetPosition(Room start, Room end) {
+        List<Position> allPosition = getallPosition(start);
+        double min = 10000;
+        Position closetPosition = null;
+        for (Position p : allPosition) {
+            int x = end.getBottomLeft().getX() + end.getWidth() / 2;
+            int y = end.getBottomLeft().getY() + end.getHeight() / 2;
+            double dist = Math.pow(p.getX() - x, 2)
+                    + Math.pow(p.getY() - y, 2);
+            if (dist < min) {
+                min = dist;
+                closetPosition = p;
+            }
+        }
+        return closetPosition;
+    }
+
+    private List<Position> getallPosition(Room r) {
+        List<Position> allPosition = new ArrayList<>();
+        for (int i = r.getBottomLeft().getX(); i <= r.getTopRight().getX(); i++) {
+            allPosition.add(new Position(i, r.getBottomLeft().getY()));
+            allPosition.add(new Position(i, r.getTopRight().getY()));
+        }
+        for (int j = r.getBottomLeft().getY(); j <= r.getTopRight().getY(); j++) {
+            allPosition.add(new Position(r.getBottomLeft().getX(), j));
+            allPosition.add(new Position(r.getTopRight().getX(), j));
+        }
+        return allPosition;
+    }
+
+    /***
+     * Generate door on the room's wall
+     * @param world the 2d array
+     * @param room the room wants to create door
+     * @return the door position
+     */
+    private Position generateDoor(TETile[][] world, Room room) {
+        int width = RandomUtils.uniform(RANDOM, 0, room.getWidth());
+        int height = RandomUtils.uniform(RANDOM, 0, room.getHeight());
+        int direction = RandomUtils.uniform(RANDOM, 4);
+        int x, y;
+        if (direction == 0) {
+            x = room.getBottomLeft().getX() + width;
+            y = room.getBottomLeft().getY();
+        } else if (direction == 1) {
+            x = room.getTopRight().getX();
+            y = room.getBottomLeft().getY() + height;
+        } else if (direction == 2) {
+            x = room.getBottomLeft().getX() + width;
+            y = room.getTopRight().getY();
+        } else {
+            x = room.getBottomLeft().getX();
+            y = room.getBottomLeft().getY() + height;
+        }
+
+        Position randomPosition = new Position(x, y);
+        drawCorner(world, Tileset.FLOOR, randomPosition);
+        return randomPosition;
     }
 
     /***
@@ -88,6 +238,12 @@ public class Engine {
             }
         }
     }
+
+    /***
+     * Draw room floor
+     * @param world The TETile 2D array
+     * @param type The type of floor
+     */
     private void drawroomFloor(TETile[][] world, TETile type) {
         for (Room r : allRoom) {
            for (int i = r.getBottomLeft().getX() + 1; i < r.getTopRight().getX(); i++) {
@@ -212,6 +368,13 @@ public class Engine {
         return false;
     }
 
+    private boolean checkPositionoverlap(Position p) {
+        for (Room r : allRoom) {
+            if(checkOverlapHelp(p, r)) return true;
+        }
+        return false;
+    }
+
     /***
      * Generate a random Position
      * @return the random Position
@@ -240,48 +403,7 @@ public class Engine {
      */
     private Room createRoom(Position p, int width, int height) {
         Position p1 = new Position(p.getX() + width, p.getY() + height);
-        Room r = new Room(p, p1);
+        Room r = new Room(p, p1, width, height);
         return r;
-    }
-
-    /***
-     * The room object is used to represent a single room in the world.
-     *
-     * All room objects must have two position objects, one for bottom-left
-     * position and another for top-right position.
-     */
-    private class Room {
-        Position bottomLeft;
-        Position topRight;
-        Room(Position a, Position b) {
-            bottomLeft = a;
-            topRight = b;
-        }
-        public Position getBottomLeft() {
-            return bottomLeft;
-        }
-        public Position getTopRight() {
-            return topRight;
-        }
-    }
-
-    /***
-     * The Position object is used to represent a single position in the world.
-     *
-     * All Position objects have x-axis and y-axis values.
-     */
-    private class Position {
-        private int x;
-        private int y;
-        Position(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-        public int getX () {
-            return x;
-        }
-        public int getY () {
-            return y;
-        }
     }
 }
